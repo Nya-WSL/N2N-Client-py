@@ -1,18 +1,52 @@
 import os
-import logging
-import traceback
 import csv
+import sys
+import urllib.request
+import logging
+import zipfile
+import traceback
+import Ver.ver
 from urllib import request
+
 
 if os.path.exists('debug.log'):
     os.remove('debug.log') # del old log file
 
 logging.basicConfig(filename='debug.log',level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt=\
 "%Y/%m/%d %H:%M:%S")
+
 CsvUrl = "http://qn.osttsstudio.ltd/files/ServerList.csv"
 CsvRes = os.getcwd() + "./ServerList.csv"
+ConUrl = "http://qn.osttsstudio.ltd/files/n2n_config.py"
+ConRes = os.getcwd() + "./Ver/ver.py"
+Zip_url = "http://qn.osttsstudio.ltd/files/n2n_update.zip"
+
+LocalVer = '1.0.2'
+ServerVer = Ver.ver.version
 
 try:
+    request.urlretrieve(ConUrl,ConRes)
+
+    if LocalVer != ServerVer:
+        print("\n\033[5;36;40m更新中，请等待。\033[0m\n")
+        def report(blocknum, blocksize, totalsize):
+            readsofar = blocknum * blocksize
+            if totalsize > 0:
+                percent = readsofar * 1e2 / totalsize
+                s = "\r%5.1f%% %*d / %d" % (percent, len(str(totalsize)), readsofar, totalsize)
+                sys.stderr.write(s)
+                if readsofar >= totalsize:
+                    sys.stderr.write("\n")
+            else: # total size is unknown
+                sys.stderr.write("read %d\n" % (readsofar,))
+
+        urllib.request.urlretrieve(Zip_url,"./chii_update_1181.zip",report)
+
+        Unzip = zipfile.ZipFile("./chii_update_1181.zip", mode='r')
+        for names in Unzip.namelist():
+            Unzip.extract(names, './.minecraft')  # unzip to .minecraft
+        Unzip.close()
+
     request.urlretrieve(CsvUrl,CsvRes)
 except:
     logging.debug(traceback.format_exc())
@@ -21,12 +55,12 @@ os.system('')
 
 print('''
 ┌───────────────────────────────────────────────────┐
-│              n2n_client      v1.0.1               │ 
+│              n2n_client      v1.0.2               │ 
 ├───────────────────────────────────────────────────┤
 │       Project Nya-WSL.  All rights reserved.      │ 
 │ For more information,please visit:www.nya-wsl.com │
 ├───────────────────────────────────────────────────┤
-│     Takahashiharuki&SHDocter       2022/03/15     │
+│     Takahashiharuki&SHDocter       2022/03/24     │
 └───────────────────────────────────────────────────┘
 ''')
 
