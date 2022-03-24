@@ -40,11 +40,11 @@ try:
             else: # total size is unknown
                 sys.stderr.write("read %d\n" % (readsofar,))
 
-        urllib.request.urlretrieve(Zip_url,"./chii_update_1181.zip",report)
+        urllib.request.urlretrieve(Zip_url,"./n2n_update.zip",report)
 
-        Unzip = zipfile.ZipFile("./chii_update_1181.zip", mode='r')
+        Unzip = zipfile.ZipFile("./n2n_update.zip", mode='r')
         for names in Unzip.namelist():
-            Unzip.extract(names, './.minecraft')  # unzip to .minecraft
+            Unzip.extract(names, './')  # unzip
         Unzip.close()
 
     request.urlretrieve(CsvUrl,CsvRes)
