@@ -1,13 +1,15 @@
 import os
 import csv
 import sys
-import urllib.request
+import time
 import logging
 import zipfile
 import traceback
-import Ver.ver
+import urllib.request
 from urllib import request
+from configparser import ConfigParser
 
+os.system('')
 
 if os.path.exists('debug.log'):
     os.remove('debug.log') # del old log file
@@ -17,15 +19,38 @@ logging.basicConfig(filename='debug.log',level=logging.DEBUG,format="%(asctime)s
 
 CsvUrl = "http://qn.osttsstudio.ltd/files/ServerList.csv"
 CsvRes = os.getcwd() + "./ServerList.csv"
-ConUrl = "http://qn.osttsstudio.ltd/files/n2n_config.py"
-ConRes = os.getcwd() + "./Ver/ver.py"
+ConUrl = "http://qn.osttsstudio.ltd/files/n2n_config.ini"
+ConRes = os.getcwd() + "./Ver/server.ini"
 Zip_url = "http://qn.osttsstudio.ltd/files/n2n_update.zip"
 
-LocalVer = '1.0.2'
-ServerVer = Ver.ver.version
+print('''
+┌───────────────────────────────────────────────────┐
+│              n2n_client      v1.0.2               │ 
+├───────────────────────────────────────────────────┤
+│       Project Nya-WSL.  All rights reserved.      │ 
+│ For more information,please visit:www.nya-wsl.com │
+├───────────────────────────────────────────────────┤
+│     Takahashiharuki&SHDocter       2022/04/22     │
+└───────────────────────────────────────────────────┘
+''')
 
 try:
+    print('\n\033[5;36;40m正在获取服务器版本信息，请稍后...\033[0m\n')
     request.urlretrieve(ConUrl,ConRes)
+
+except:
+    logging.debug(traceback.format_exc())
+
+VerLocal = ConfigParser()
+VerLocal.read('./Ver/local.ini')
+VerServer = ConfigParser()
+VerServer.read('./Ver/server.ini')
+
+LocalVer = VerLocal.get('settings','version')
+ServerVer = VerServer.get('settings','version')
+
+try:
+    print(f'目前版本：{LocalVer},最新版本：{ServerVer}')
 
     if LocalVer != ServerVer:
         print("\n\033[5;36;40m更新中，请等待。\033[0m\n")
@@ -44,25 +69,26 @@ try:
 
         Unzip = zipfile.ZipFile("./n2n_update.zip", mode='r')
         for names in Unzip.namelist():
-            Unzip.extract(names, './')  # unzip
+            Unzip.extract(names, './update')  # unzip
         Unzip.close()
+        time.sleep(2)
+        os.remove('n2n_update.zip')
+        os.system('update.bat')
 
-    request.urlretrieve(CsvUrl,CsvRes)
 except:
     logging.debug(traceback.format_exc())
 
-os.system('')
+try:
+    if LocalVer == ServerVer:
+        print('''
+\n\033[5;36;40m目前已是最新版本！
 
-print('''
-┌───────────────────────────────────────────────────┐
-│              n2n_client      v1.0.2               │ 
-├───────────────────────────────────────────────────┤
-│       Project Nya-WSL.  All rights reserved.      │ 
-│ For more information,please visit:www.nya-wsl.com │
-├───────────────────────────────────────────────────┤
-│     Takahashiharuki&SHDocter       2022/03/24     │
-└───────────────────────────────────────────────────┘
-''')
+正在查询可用服务器，请稍后...
+\033[0m\n''')
+        request.urlretrieve(CsvUrl,CsvRes)
+except:
+    logging.debug(traceback.format_exc())
+
 
 try:
     Name = input('请输入组名称(分组隔离，不在同一个组将无法组网)：')
@@ -83,11 +109,6 @@ try:
         number = int(input('请输入服务器序号，按Enter键结束：'))
         Server = address[number-1]
         print (f'服务器地址:{Server}')
-        
-    # ConServer = ConfigParser()
-    # ConServer.read('n2n.ini')
-
-    # Server = ConServer.get('setting','Server') + ".n2n.osttsstudio.ltd"
 
 # 中国北京:bj.n2n.osttsstudio.ltd:7777
 # 中国上海:sh.n2n.osttsstudio.ltd:7777
@@ -107,13 +128,6 @@ try:
 │                 Please wait...                    │
 └───────────────────────────────────────────────────┘
 ''')
-
-    # if Server == 1:
-    #     IP = "n2n.osttsstudio.ltd:7777"
-    # if Server == 2:
-    #     IP = "n2n.haruki.top:7777"
-    # elif Server != 1 and 2:
-    #     input('参数错误！请关闭本窗口后重新启动！')
 
     if Assign == 1:
         ip = int(input('请输入IP地址最后一组的数字，并按回车确认（例：71.94.86.13 只需要输入13）:'))
