@@ -72,6 +72,8 @@ try:
             Unzip.extract(names, './update')  # unzip
         Unzip.close()
         time.sleep(2)
+        if os.path.exists('./Ver/server.ini'):
+            os.remove('./Ver/server.ini')
         os.remove('n2n_update.zip')
         os.system('update.bat')
 
@@ -87,7 +89,8 @@ try:
 正在查询可用服务器，请稍后...
 \033[0m
 ''')
-
+        if os.path.exists('./Ver/server.ini'):
+            os.remove('./Ver/server.ini')
         request.urlretrieve(CsvUrl,CsvRes)
 except:
     logging.debug(traceback.format_exc())
