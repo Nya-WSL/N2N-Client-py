@@ -50,7 +50,7 @@ LocalVer = VerLocal.get('settings','version')
 ServerVer = VerServer.get('settings','version')
 
 try:
-    print(f'目前版本：{LocalVer},最新版本：{ServerVer}')
+    print(f'目前版本：{LocalVer}   最新版本：{ServerVer}')
 
     if LocalVer != ServerVer:
         print("\n\033[5;36;40m更新中，请等待。\033[0m\n")
@@ -81,10 +81,13 @@ except:
 try:
     if LocalVer == ServerVer:
         print('''
-\n\033[5;36;40m目前已是最新版本！
+\n\033[5;36;40m
+目前已是最新版本！
 
 正在查询可用服务器，请稍后...
-\033[0m\n''')
+\033[0m
+''')
+
         request.urlretrieve(CsvUrl,CsvRes)
 except:
     logging.debug(traceback.format_exc())
@@ -108,20 +111,18 @@ try:
         print('-------------------------------------------')
         number = int(input('请输入服务器序号，按Enter键结束：'))
         Server = address[number-1]
-        print (f'服务器地址:{Server}')
-
-# 中国北京:bj.n2n.osttsstudio.ltd:7777
-# 中国上海:sh.n2n.osttsstudio.ltd:7777
-# 中国香港:hk.n2n.osttsstudio.ltd:7777
+        print (f'''
+服务器地址:\033[5;36;40m{Server}\033[0m\n''')
 
     Assign = int(input('''
 -------------------------------------------
 请选择IP分配方法
+
 1.手动分配
 2.自动分配(推荐)
 
-
 -------------------------------------------
+
 请输入数字并按回车确认:'''))
     print('''
 ┌───────────────────────────────────────────────────┐
@@ -132,7 +133,9 @@ try:
     if Assign == 1:
         ip = int(input('请输入IP地址最后一组的数字，并按回车确认（例：71.94.86.13 只需要输入13）:'))
         address = '71.94.86.%d'%ip
-        input(f'IP:{address} 如有误请关闭重新运行，无误请按回车确认')
+        input(f'''
+IP:\033[5;36;40m{address}\033[0m\n
+如有误请关闭重新运行，无误请按回车确认''')
         echo = f"edge.exe -c {Name} -a {address} -l {Server}"
         os.system(echo)
     if Assign == 2:
