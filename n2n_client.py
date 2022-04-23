@@ -11,10 +11,10 @@ from configparser import ConfigParser
 
 os.system('')
 
-if os.path.exists('debug.log'):
-    os.remove('debug.log') # del old log file
+if os.path.exists('n2n_client.log'):
+    os.remove('n2n_client.log') # del old log file
 
-logging.basicConfig(filename='debug.log',level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt=\
+logging.basicConfig(filename='n2n_client.log',level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt=\
 "%Y/%m/%d %H:%M:%S")
 
 CsvUrl = "http://qn.osttsstudio.ltd/files/ServerList.csv"
