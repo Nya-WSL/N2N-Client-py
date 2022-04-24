@@ -46,6 +46,8 @@ VerLocal.read('./Ver/local.ini')
 VerServer = ConfigParser()
 VerServer.read('./Ver/server.ini')
 
+batRes = VerLocal.get('settings','Bat_Res')
+Bat_Res = os.getcwd() + batRes
 LocalVer = VerLocal.get('settings','version')
 ServerVer = VerServer.get('settings','version')
 
@@ -75,7 +77,7 @@ try:
         if os.path.exists('./Ver/server.ini'):
             os.remove('./Ver/server.ini')
         os.remove('n2n_update.zip')
-        os.system('./update/Bat/update.bat')
+        os.system(Bat_Res)
 
 except:
     logging.debug(traceback.format_exc())
