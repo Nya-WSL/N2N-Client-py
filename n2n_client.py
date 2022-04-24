@@ -25,12 +25,12 @@ Zip_url = "http://qn.osttsstudio.ltd/files/n2n_update.zip"
 
 print('''
 ┌───────────────────────────────────────────────────┐
-│              n2n_client      v1.0.2               │ 
+│              n2n_client      v1.0.2-fix           │ 
 ├───────────────────────────────────────────────────┤
 │       Project Nya-WSL.  All rights reserved.      │ 
 │ For more information,please visit:www.nya-wsl.com │
 ├───────────────────────────────────────────────────┤
-│     Takahashiharuki&SHDocter       2022/04/22     │
+│     Takahashiharuki&SHDocter       2022/04/25     │
 └───────────────────────────────────────────────────┘
 ''')
 
@@ -46,6 +46,8 @@ VerLocal.read('./Ver/local.ini')
 VerServer = ConfigParser()
 VerServer.read('./Ver/server.ini')
 
+batRes = VerLocal.get('settings','Bat_Res')
+Bat_Res = os.getcwd() + batRes
 LocalVer = VerLocal.get('settings','version')
 ServerVer = VerServer.get('settings','version')
 
@@ -75,7 +77,7 @@ try:
         if os.path.exists('./Ver/server.ini'):
             os.remove('./Ver/server.ini')
         os.remove('n2n_update.zip')
-        os.system('update.bat')
+        os.system(Bat_Res)
 
 except:
     logging.debug(traceback.format_exc())
