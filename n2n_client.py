@@ -17,6 +17,12 @@ if os.path.exists('n2n_client.log'):
 logging.basicConfig(filename='n2n_client.log',level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt=\
 "%Y/%m/%d %H:%M:%S")
 
+ConServer = ConfigParser()
+ConServer.read('n2n.ini')
+
+ConServerUrl = ConServer.get('setting','Server')
+ConServerRes = os.getcwd() + "./config.ini"
+
 CsvUrl = "http://qn.osttsstudio.ltd/files/ServerList.csv"
 CsvRes = os.getcwd() + "./ServerList.csv"
 ConUrl = "http://qn.osttsstudio.ltd/files/n2n_config.ini"
@@ -25,12 +31,12 @@ Zip_url = "http://qn.osttsstudio.ltd/files/n2n_update.zip"
 
 print('''
 ┌───────────────────────────────────────────────────┐
-│              n2n_client      v1.0.2-fix           │ 
+│              n2n_client            v1.0.3         │ 
 ├───────────────────────────────────────────────────┤
 │       Project Nya-WSL.  All rights reserved.      │ 
 │ For more information,please visit:www.nya-wsl.com │
 ├───────────────────────────────────────────────────┤
-│     Takahashiharuki&SHDocter       2022/04/25     │
+│     Takahashiharuki&SHDocter       2022/05/30     │
 └───────────────────────────────────────────────────┘
 ''')
 
@@ -101,6 +107,7 @@ except:
 try:
     Name = input('请输入组名称(分组隔离，不在同一个组将无法组网)：')
     print('-------------------------------------------')
+
     with open(r'./ServerList.csv',encoding='GB2312',errors='ignore') as csvfile:
         reader = csv.reader(csvfile)
         place = [row[0] for row in reader]
