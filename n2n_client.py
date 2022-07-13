@@ -31,12 +31,12 @@ Zip_url = "https://nya-wsl.osttsstudio.ltd/files/n2n_update.zip"
 
 print('''
 ┌───────────────────────────────────────────────────┐
-│              n2n_client            v1.0.3         │ 
+│              n2n_client            v1.0.4         │ 
 ├───────────────────────────────────────────────────┤
 │       Project Nya-WSL.  All rights reserved.      │ 
 │ For more information,please visit:www.nya-wsl.com │
 ├───────────────────────────────────────────────────┤
-│     Takahashiharuki&SHDocter       2022/05/30     │
+│     Takahashiharuki&SHDocter       2022/07/14     │
 └───────────────────────────────────────────────────┘
 ''')
 
