@@ -23,11 +23,11 @@ ConServer.read('n2n.ini')
 ConServerUrl = ConServer.get('setting','Server')
 ConServerRes = os.getcwd() + "./config.ini"
 
-CsvUrl = "http://qn.osttsstudio.ltd/files/ServerList.csv"
+CsvUrl = "https://nya-wsl.osttsstudio.ltd/files/ServerList.csv"
 CsvRes = os.getcwd() + "./ServerList.csv"
-ConUrl = "http://qn.osttsstudio.ltd/files/n2n_config.ini"
+ConUrl = "https://nya-wsl.osttsstudio.ltd/files/n2n_config.ini"
 ConRes = os.getcwd() + "./Ver/server.ini"
-Zip_url = "http://qn.osttsstudio.ltd/files/n2n_update.zip"
+Zip_url = "https://nya-wsl.osttsstudio.ltd/files/n2n_update.zip"
 
 print('''
 ┌───────────────────────────────────────────────────┐
