@@ -14,17 +14,14 @@ os.system('')
 LogConfig = ConfigParser()
 LogConfig.read('log.ini')
 LogFile = LogConfig.get('params', 'name')
-LogLevel = LogConfig.get('params', 'level')
-LogFormat = LogConfig.get('params', 'format')
-LogDatafmt = LogConfig.get('params', 'datafmt')
 
 if os.path.exists(LogFile):
     os.remove(LogFile) # del old log file
 
-logging.basicConfig(filename=LogFile,level=LogLevel,format=LogFormat,datefmt=LogDatafmt)
+logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/%m/%d %H:%M:%S")
 
 ConServer = ConfigParser()
-ConServer.read('url_config.ini')
+ConServer.read('config.local.ini')
 
 ConServerUrl = ConServer.get('Server','server')
 # ConServerRes = os.getcwd() + "./config.ini"
@@ -44,12 +41,14 @@ print('''
 ┃ For more information,please visit: www.nya-wsl.com ┃
 ┃    Copyright © 2021-2022. All rights reserved.     ┃
 ┠────────────────────────────────────────────────────┨
-┃     Takahashiharuki & SHDocter      2022/08/27     ┃
+┃     Takahashiharuki & SHDocter      2022/08/28     ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ''')
 
 try:
-    print('\n\033[5;36;40m正在获取服务器版本信息，请稍后...\033[0m\n')
+    print("\n\033[5;31;40m注意：请以管理员权限运行\033[0m\n")
+    print("")
+    print("\n\033[5;36;40m正在获取服务器版本信息，请稍后...\033[0m\n")
     request.urlretrieve(ConUrl,ConRes)
 
 except:
@@ -66,10 +65,10 @@ LocalVer = VerLocal.get('settings','version')
 ServerVer = VerServer.get('settings','version')
 
 try:
-
+    time.sleep(0.5)
     print(f'''──────────────────────────────────────────────────────
-    目前版本：{LocalVer}   最新版本：{ServerVer}
-    ──────────────────────────────────────────────────────''')
+     目前版本：{LocalVer}   最新版本：{ServerVer}
+──────────────────────────────────────────────────────''')
 
 
     if LocalVer != ServerVer:
@@ -105,7 +104,6 @@ try:
         print('''
 \n\033[5;36;40m
 目前已是最新版本！
-──────────────────────────────────────────────────────
 正在查询可用服务器，请稍后...
 \033[0m
 ''')
@@ -119,7 +117,7 @@ except:
 
 try:
     Name = input('''──────────────────────────────────────────────────────
-    请输入组名称(分组隔离，不在同一个组将无法组网)：''')
+请输入组名称(分组隔离，不在同一个组将无法组网)：''')
     print('──────────────────────────────────────────────────────')
 
     with open(r'./ServerList.csv',encoding='GB2312',errors='ignore') as csvfile:
@@ -136,6 +134,8 @@ try:
             print("序号：%s 服务器：%s" % (place.index(i) + 1, i))
         print('──────────────────────────────────────────────────────')
         number = int(input('请输入服务器序号，按Enter键结束：'))
+        if number > len(place):
+            input("参数错误，请重新运行...")
         Server = address[number-1]
         print (f'''
 服务器地址:\033[5;36;40m{Server}\033[0m\n''')
@@ -157,7 +157,7 @@ try:
 ''')
 
     if Assign == 1:
-        address = int(input('请输入IP地址，并按回车确认（例：127.0.0.1）:'))
+        address = input('请输入IP地址，并按回车确认（例：127.0.0.1）:')
         input(f'''
 IP:\033[5;36;40m{address}\033[0m\n
 如有误请关闭重新运行，无误请按回车确认''')
