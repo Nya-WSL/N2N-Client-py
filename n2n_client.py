@@ -39,11 +39,14 @@ print('''
 ┠────────────────────────────────────────────────────┨
 ┃                A Project of Nya-WSL.               ┃ 
 ┃ For more information,please visit: www.nya-wsl.com ┃
-┃    Copyright © 2021-2022. All rights reserved.     ┃
+┃    Copyright 2021-2022. All rights reserved.       ┃
 ┠────────────────────────────────────────────────────┨
 ┃     Takahashiharuki & SHDocter      2022/08/28     ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ''')
+
+time.sleep(3.5)
+os.system("cls")
 
 try:
     print("\n\033[5;31;40m注意：请以管理员权限运行\033[0m\n")
@@ -65,11 +68,13 @@ LocalVer = VerLocal.get('settings','version')
 ServerVer = VerServer.get('settings','version')
 
 try:
+    time.sleep(2)
+    os.system("cls")
     time.sleep(0.5)
     print(f'''──────────────────────────────────────────────────────
      目前版本：{LocalVer}   最新版本：{ServerVer}
 ──────────────────────────────────────────────────────''')
-
+    time.sleep(3)
 
     if LocalVer != ServerVer:
         print("\n\033[5;36;40m更新中，请等待。\033[0m\n")
@@ -101,6 +106,7 @@ except:
 
 try:
     if LocalVer == ServerVer:
+        os.system("cls")
         print('''
 \n\033[5;36;40m
 目前已是最新版本！
@@ -116,6 +122,9 @@ except:
 
 
 try:
+    time.sleep(3)
+    os.system("cls")
+
     Name = input('''──────────────────────────────────────────────────────
 请输入组名称(分组隔离，不在同一个组将无法组网)：''')
     print('──────────────────────────────────────────────────────')
@@ -139,6 +148,8 @@ try:
         Server = address[number-1]
         print (f'''
 服务器地址:\033[5;36;40m{Server}\033[0m\n''')
+        time.sleep(2)
+        os.system("cls")
 
     Assign = int(input('''
 ──────────────────────────────────────────────────────
@@ -155,6 +166,8 @@ try:
 │                 Please wait...                    │
 └───────────────────────────────────────────────────┘
 ''')
+    time.sleep(1)
+    os.system("cls")
 
     if Assign == 1:
         address = input('请输入IP地址，并按回车确认（例：127.0.0.1）:')
