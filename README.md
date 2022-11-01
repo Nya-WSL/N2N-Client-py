@@ -1,3 +1,7 @@
+
+
+![python](https://img.shields.io/badge/Python-3.10-blue)![os](https://img.shields.io/badge/OS-Windows-orange)[![CircleCI](https://dl.circleci.com/status-badge/img/gh/Nya-WSL/N2N-Client-py/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/Nya-WSL/N2N-Client-py/tree/main)
+
 # 如何使用
 
 ### 因为修改网卡需要管理员账号，请先将n2n-client.exe和edge.exe任意一个设置为用管理员权限运行（自行百度）
