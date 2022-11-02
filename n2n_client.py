@@ -5,7 +5,7 @@ import time
 import logging
 import zipfile
 import traceback
-import urllib.request
+#import urllib.request
 from urllib import request
 from configparser import ConfigParser
 
@@ -89,7 +89,7 @@ try:
             else: # total size is unknown
                 sys.stderr.write("read %d\n" % (readsofar,))
 
-        urllib.request.urlretrieve(Zip_url,"./n2n_update.zip",report)
+        request.urlretrieve(Zip_url,"./n2n_update.zip",report)
 
         Unzip = zipfile.ZipFile("./n2n_update.zip", mode='r')
         for names in Unzip.namelist():
