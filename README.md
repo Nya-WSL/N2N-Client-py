@@ -1,6 +1,6 @@
 
 
-![python](https://img.shields.io/badge/Python-3.10.4-blue) ![os](https://img.shields.io/badge/OS-Windows-orange) [![CircleCI](https://dl.circleci.com/status-badge/img/gh/Nya-WSL/N2N-Client-py/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/Nya-WSL/N2N-Client-py/tree/main) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/2c57ea2ee77f4860a02479f27d76def0)](https://www.codacy.com/gh/Nya-WSL/N2N-Client-py/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Nya-WSL/N2N-Client-py&amp;utm_campaign=Badge_Grade)
+![python](https://img.shields.io/badge/Python-3.11.0-blue) ![os](https://img.shields.io/badge/OS-Windows-orange) [![CircleCI](https://dl.circleci.com/status-badge/img/gh/Nya-WSL/N2N-Client-py/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/Nya-WSL/N2N-Client-py/tree/main) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/2c57ea2ee77f4860a02479f27d76def0)](https://www.codacy.com/gh/Nya-WSL/N2N-Client-py/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Nya-WSL/N2N-Client-py&amp;utm_campaign=Badge_Grade)
 
 ### [如何使用/how to use](./How-To-Use.md)（该文档已过时，仅供参考，新的文档正在编写中）
 
