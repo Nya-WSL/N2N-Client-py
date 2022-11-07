@@ -165,8 +165,9 @@ try:
             print("序号：%s 服务器：%s" % (place.index(i) + 1, i))
         print('──────────────────────────────────────────────────────')
         number = int(input('请输入服务器序号，按Enter键结束：'))
-        if number > len(place): # 判断输入值是否超出范围
+        if number > len(place) or number < 1: # 判断输入值是否超出范围
             input("参数错误，请重新运行...")
+            sys.exit("input error")
         Server = address[number-1]
         print (f'''
 服务器地址:\033[5;36;40m{Server}\033[0m\n''')
