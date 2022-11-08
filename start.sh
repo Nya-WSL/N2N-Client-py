@@ -7,6 +7,7 @@ cmd=$"./n2n_client_linux"
 
 sudo chmod +x n2n_client_linux
 sudo chmod +x edge
-screen -mS $screen
+screen -dmS $screen
 screen -x -S $screen -p 0 -X stuff "$cmd"
 screen -x -S $screen -p 0 -X stuff $'\n'
+screen -r $screen
