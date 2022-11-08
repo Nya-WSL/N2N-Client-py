@@ -4,6 +4,7 @@ import sys
 import time
 import logging
 import zipfile
+import requests
 import traceback
 from urllib import request
 from configparser import ConfigParser
@@ -19,7 +20,8 @@ LogFile = LogConfig.get('params', 'name')
 if os.path.exists(LogFile):
     os.remove(LogFile)
 
-logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/%m/%d %H:%M:%S") #logging配置
+logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/\
+%m/%d %H:%M:%S") #logging配置
 
 # 读取本地配置
 ConServer = ConfigParser()
@@ -37,12 +39,12 @@ ConRes = os.getcwd() + ConServer.get('File','conRes')
 
 Zip_url = ConServerUrl + ConServer.get('File','zip_url') #获取更新包url
 
-# 获取服务器配置文件
+# 获取服务器版本信息
 try:
     print("\n\033[5;31;40m注意：请以管理员权限运行\033[0m\n")
     print("")
     print("\n\033[5;36;40m正在获取服务器版本信息，请稍后...\033[0m\n")
-    request.urlretrieve(ConUrl,ConRes)
+    ServerVer = requests.get("http://101.43.136.111:8888/TraSimSwitcher/version_info.html").text
 
 except:
     logging.debug(traceback.format_exc()) # 输出log
@@ -50,17 +52,12 @@ except:
 # 获取版本配置
 VerLocal = ConfigParser()
 VerLocal.read('Ver/local.ini')
-VerServer = ConfigParser()
-VerServer.read('Ver/server.ini')
 
 # 定义bat脚本路径
-batRes = VerLocal.get('settings','Bat_Res')
-Bat_Res = os.getcwd() + batRes
+shellRes = VerLocal.get('settings','Shell_Res')
+Shell_Res = os.getcwd() + shellRes
 
-# 获取版本
-LocalVer = VerLocal.get('settings','version')
-ServerVer = VerServer.get('settings','version')
-
+LocalVer = VerLocal.get('settings','version') # 获取本地版本
 frontSpace = (50-len(LocalVer))*" " # 计算空格数量
 
 # 打屏
@@ -110,7 +107,7 @@ try:
 # 解压更新包
         Unzip = zipfile.ZipFile("n2n_update.zip", mode='r')
         for names in Unzip.namelist():
-            Unzip.extract(names, 'update')
+            Unzip.extract(names, os.getcwd())
         Unzip.close()
         time.sleep(2)
 
@@ -118,7 +115,7 @@ try:
         if os.path.exists('Ver/server.ini'):
             os.remove('Ver/server.ini')
         os.remove('n2n_update.zip')
-        os.system(Bat_Res)
+        os.system(Shell_Res)
 
 except:
     logging.debug(traceback.format_exc()) # 输出log

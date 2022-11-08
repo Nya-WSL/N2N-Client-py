@@ -19,7 +19,8 @@ LogFile = LogConfig.get('params', 'name')
 if os.path.exists(LogFile):
     os.remove(LogFile)
 
-logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/%m/%d %H:%M:%S") #logging配置
+logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/\
+%m/%d %H:%M:%S") #logging配置
 
 # 读取本地配置
 ConServer = ConfigParser()
