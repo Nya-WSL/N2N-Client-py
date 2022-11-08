@@ -198,7 +198,7 @@ try:
         input(f'''
 IP:\033[5;36;40m{address}\033[0m\n
 如有误请关闭重新运行，无误请按回车确认''')
-        echo = f"./edge -c {Name} -a {address} -l {Server}"
+        echo = f"./edge -c {Name} -a {address} -f -l {Server}"
         os.system(echo)
     if Assign == 1:
         print('''
