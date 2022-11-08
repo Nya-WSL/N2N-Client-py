@@ -78,11 +78,11 @@ print(f'''
 ''')
 
 time.sleep(3.5)
-os.system("cls")
+os.system("clear")
 
 try:
     time.sleep(2)
-    os.system("cls")
+    os.system("clear")
     time.sleep(0.5)
     print(f'''──────────────────────────────────────────────────────
      目前版本：{LocalVer}   最新版本：{ServerVer}
@@ -125,7 +125,7 @@ except:
 
 try:
     if LocalVer == ServerVer:
-        os.system("cls")
+        os.system("clear")
         print('''
 \n\033[5;36;40m
 目前已是最新版本！
@@ -143,7 +143,7 @@ except:
 
 try:
     time.sleep(3)
-    os.system("cls")
+    os.system("clear")
 
     Name = input('''──────────────────────────────────────────────────────
 请输入组名称(分组隔离，不在同一个组将无法组网)：''')
@@ -158,7 +158,7 @@ try:
         reader = csv.reader(csvfile)
         address = [row[1] for row in reader] # 服务器IP
 
-        os.system("cls")
+        os.system("clear")
         print('可用服务器列表：')
         print('──────────────────────────────────────────────────────')
         for i in place:
@@ -172,7 +172,7 @@ try:
         print (f'''
 服务器地址:\033[5;36;40m{Server}\033[0m\n''')
         time.sleep(2)
-        os.system("cls")
+        os.system("clear")
 
     Assign = int(input('''
 ──────────────────────────────────────────────────────
@@ -186,7 +186,7 @@ try:
 请输入数字并按回车确认:'''))
 
     time.sleep(1)
-    os.system("cls")
+    os.system("clear")
 
     if Assign == 2:
         print('''
@@ -206,7 +206,7 @@ IP:\033[5;36;40m{address}\033[0m\n
 │                 Please wait...                    │
 └───────────────────────────────────────────────────┘
 ''')
-        echo = f"./edge -c {Name} -l {Server}"
+        echo = f"./edge -c {Name} -f -l {Server}"
         os.system(echo)
     else:
         input('参数错误！请重新启动程式！')
