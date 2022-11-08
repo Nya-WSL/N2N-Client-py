@@ -23,7 +23,7 @@ logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %
 
 # 读取本地配置
 ConServer = ConfigParser()
-ConServer.read('config.local.ini')
+ConServer.read('config.local.linux.ini')
 
 ConServerUrl = ConServer.get('Server','server') # 读取服务器配置
 
@@ -49,9 +49,9 @@ except:
 
 # 获取版本配置
 VerLocal = ConfigParser()
-VerLocal.read('./Ver/local.ini')
+VerLocal.read('Ver/local.ini')
 VerServer = ConfigParser()
-VerServer.read('./Ver/server.ini')
+VerServer.read('Ver/server.ini')
 
 # 定义bat脚本路径
 batRes = VerLocal.get('settings','Bat_Res')
@@ -105,18 +105,18 @@ try:
             else:
                 sys.stderr.write("read %d\n" % (readsofar,))
 
-        request.urlretrieve(Zip_url,"./n2n_update.zip",report) # 下载更新包
+        request.urlretrieve(Zip_url,"n2n_update.zip",report) # 下载更新包
 
 # 解压更新包
-        Unzip = zipfile.ZipFile("./n2n_update.zip", mode='r')
+        Unzip = zipfile.ZipFile("n2n_update.zip", mode='r')
         for names in Unzip.namelist():
-            Unzip.extract(names, './update')
+            Unzip.extract(names, 'update')
         Unzip.close()
         time.sleep(2)
 
 # 删除服务器配置文件和更新包并执行更新
-        if os.path.exists('./Ver/server.ini'):
-            os.remove('./Ver/server.ini')
+        if os.path.exists('Ver/server.ini'):
+            os.remove('Ver/server.ini')
         os.remove('n2n_update.zip')
         os.system(Bat_Res)
 
@@ -133,8 +133,8 @@ try:
 正在查询可用服务器，请稍后...
 \033[0m
 ''')
-        if os.path.exists('./Ver/server.ini'):
-            os.remove('./Ver/server.ini')
+        if os.path.exists('Ver/server.ini'):
+            os.remove('Ver/server.ini')
         request.urlretrieve(CsvUrl,CsvRes)
         print('查询完成！')
 except:
@@ -150,11 +150,11 @@ try:
     print('──────────────────────────────────────────────────────')
 
 # 读取服务器列表
-    with open(r'./ServerList.csv',encoding='GB2312',errors='ignore') as csvfile:
+    with open(r'ServerList.csv',encoding='GB2312',errors='ignore') as csvfile:
         reader = csv.reader(csvfile)
         place = [row[0] for row in reader] # 服务器所在地域
 
-    with open(r'./ServerList.csv',encoding='GB2312',errors='ignore') as csvfile:
+    with open(r'ServerList.csv',encoding='GB2312',errors='ignore') as csvfile:
         reader = csv.reader(csvfile)
         address = [row[1] for row in reader] # 服务器IP
 

@@ -23,7 +23,7 @@ logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %
 
 # 读取本地配置
 ConServer = ConfigParser()
-ConServer.read('config.local.ini')
+ConServer.read('config.local.win.ini')
 
 ConServerUrl = ConServer.get('Server','server') # 读取服务器配置
 
