@@ -44,7 +44,7 @@ try:
     print("\n\033[5;31;40m注意：请以管理员权限运行\033[0m\n")
     print("")
     print("\n\033[5;36;40m正在获取服务器版本信息，请稍后...\033[0m\n")
-    ServerVer = requests.get("http://101.43.136.111:8888/TraSimSwitcher/version_info.html").text
+    ServerVer = requests.get(ConServerUrl + ConUrl).text
 
 except:
     logging.debug(traceback.format_exc()) # 输出log
@@ -53,7 +53,7 @@ except:
 VerLocal = ConfigParser()
 VerLocal.read('Ver/local.ini')
 
-# 定义bat脚本路径
+# 定义shell脚本路径
 shellRes = VerLocal.get('settings','Shell_Res')
 Shell_Res = os.getcwd() + shellRes
 
@@ -102,19 +102,19 @@ try:
             else:
                 sys.stderr.write("read %d\n" % (readsofar,))
 
-        request.urlretrieve(Zip_url,"n2n_update.zip",report) # 下载更新包
+        request.urlretrieve(Zip_url,"n2n_update_linux.zip",report) # 下载更新包
 
 # 解压更新包
-        Unzip = zipfile.ZipFile("n2n_update.zip", mode='r')
-        for names in Unzip.namelist():
-            Unzip.extract(names, os.getcwd())
-        Unzip.close()
-        time.sleep(2)
+#         Unzip = zipfile.ZipFile("n2n_update.zip", mode='r')
+#         for names in Unzip.namelist():
+#             Unzip.extract(names, os.getcwd())
+#         Unzip.close()
+#         time.sleep(2)
 
-# 删除服务器配置文件和更新包并执行更新
+# 删除服务器配置文件并执行更新
         if os.path.exists('Ver/server.ini'):
             os.remove('Ver/server.ini')
-        os.remove('n2n_update.zip')
+        # os.remove('n2n_update.zip')
         os.system(Shell_Res)
 
 except:
