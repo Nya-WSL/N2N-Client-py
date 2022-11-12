@@ -3,25 +3,11 @@ import csv
 import sys
 import time
 import logging
-import zipfile
+#import zipfile
 import requests
 import traceback
 from urllib import request
 from configparser import ConfigParser
-
-os.system('') #修复win10的print颜色bug
-
-# 读取log配置
-LogConfig = ConfigParser()
-LogConfig.read('log.ini')
-LogFile = LogConfig.get('params', 'name')
-
-# 删除旧的log
-if os.path.exists(LogFile):
-    os.remove(LogFile)
-
-logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/\
-%m/%d %H:%M:%S") #logging配置
 
 # 读取本地配置
 ConServer = ConfigParser()
@@ -33,13 +19,23 @@ ConServerUrl = ConServer.get('Server','server') # 读取服务器配置
 CsvUrl = ConServerUrl + ConServer.get('File','csvUrl')
 CsvRes = os.getcwd() + ConServer.get('File','csvRes')
 
+LogFile = ConServer.get('File', 'log') # 读取log配置
+
+logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/\
+%m/%d %H:%M:%S") # logging配置
+
+# 删除旧的log
+if os.path.exists(LogFile):
+    os.remove(LogFile)
+
 # 服务器配置文件url和临时保存路径
 ConUrl = ConServerUrl + ConServer.get('File','conUrl')
 ConRes = os.getcwd() + ConServer.get('File','conRes')
 
-Zip_url = ConServerUrl + ConServer.get('File','zip_url') #获取更新包url
+Zip_url = ConServerUrl + ConServer.get('File','zip_url') # 获取更新包url
 
 # 获取服务器版本信息
+# noinspection PyBroadException
 try:
     print("\n\033[5;31;40m注意：请以管理员权限运行\033[0m\n")
     print("")
@@ -49,15 +45,11 @@ try:
 except:
     logging.debug(traceback.format_exc()) # 输出log
 
-# 获取版本配置
-VerLocal = ConfigParser()
-VerLocal.read('Ver/local.ini')
-
 # 定义shell脚本路径
-shellRes = VerLocal.get('settings','Shell_Res')
+shellRes = ConServer.get('settings','Shell_Res')
 Shell_Res = os.getcwd() + shellRes
 
-LocalVer = VerLocal.get('settings','version') # 获取本地版本
+LocalVer = ConServer.get('settings','version') # 获取本地版本
 frontSpace = (50-len(LocalVer))*" " # 计算空格数量
 
 # 打屏
@@ -81,6 +73,7 @@ try:
     time.sleep(2)
     os.system("clear")
     time.sleep(0.5)
+    # noinspection PyUnboundLocalVariable
     print(f'''──────────────────────────────────────────────────────
      目前版本：{LocalVer}   最新版本：{ServerVer}
 ──────────────────────────────────────────────────────''') # 打印版本
@@ -137,7 +130,7 @@ try:
 except:
     logging.debug(traceback.format_exc()) # 输出log
 
-
+# noinspection PyBroadException
 try:
     time.sleep(3)
     os.system("clear")

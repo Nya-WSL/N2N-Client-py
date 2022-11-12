@@ -8,6 +8,7 @@ import traceback
 from urllib import request
 from configparser import ConfigParser
 
+# noinspection PyPep8
 os.system('') #修复win10的print颜色bug
 
 # 读取log配置
