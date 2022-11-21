@@ -2,37 +2,36 @@ import os
 import csv
 import sys
 import time
+import json
 import logging
-#import zipfile
 import requests
 import traceback
 from urllib import request
-from configparser import ConfigParser
 
 # 读取本地配置
-ConServer = ConfigParser()
-ConServer.read('config.local.linux.ini')
+c = open('config.local.linux.json','r')
+text = c.read()
+c.close()
+config = json.loads(text)
 
-ConServerUrl = ConServer.get('Server','server') # 读取服务器配置
+ConServerUrl = config["server"] # 读取服务器配置
 
 # 服务器列表获取url和临时保存路径
-CsvUrl = ConServerUrl + ConServer.get('File','csvUrl')
-CsvRes = os.getcwd() + ConServer.get('File','csvRes')
+CsvUrl = ConServerUrl + config['Path']['csvUrl']
+CsvRes = os.getcwd() + config['Path']['csvRes']
 
-LogFile = ConServer.get('File', 'log') # 读取log配置
-
-logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/\
-%m/%d %H:%M:%S") # logging配置
+LogFile = config['Path']['log'] # 读取log配置
 
 # 删除旧的log
 if os.path.exists(LogFile):
     os.remove(LogFile)
 
-# 服务器配置文件url和临时保存路径
-ConUrl = ConServerUrl + ConServer.get('File','conUrl')
-ConRes = os.getcwd() + ConServer.get('File','conRes')
+logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/\
+%m/%d %H:%M:%S") # log配置
 
-Zip_url = ConServerUrl + ConServer.get('File','zip_url') # 获取更新包url
+ConUrl = ConServerUrl + config['Path']['conUrl']# 服务器配置文件
+
+ZipUrl = ConServerUrl + config['Path']['zipUrl'] # 获取更新包url
 
 # 获取服务器版本信息
 # noinspection PyBroadException
@@ -40,16 +39,16 @@ try:
     print("\n\033[5;31;40m注意：请以管理员权限运行\033[0m\n")
     print("")
     print("\n\033[5;36;40m正在获取服务器版本信息，请稍后...\033[0m\n")
-    ServerVer = requests.get(ConServerUrl + ConUrl).text
-
+    ServerVer = requests.get(ConUrl).text.strip()
+    
 except:
     logging.debug(traceback.format_exc()) # 输出log
 
 # 定义shell脚本路径
-shellRes = ConServer.get('settings','Shell_Res')
-Shell_Res = os.getcwd() + shellRes
+shellRes = config['Path']['shellRes']
+Shell = os.getcwd() + shellRes
 
-LocalVer = ConServer.get('settings','version') # 获取本地版本
+LocalVer = config['version'] # 获取本地版本
 frontSpace = (50-len(LocalVer))*" " # 计算空格数量
 
 # 打屏
@@ -70,9 +69,6 @@ time.sleep(3.5)
 os.system("clear")
 
 try:
-    time.sleep(2)
-    os.system("clear")
-    time.sleep(0.5)
     # noinspection PyUnboundLocalVariable
     print(f'''──────────────────────────────────────────────────────
      目前版本：{LocalVer}   最新版本：{ServerVer}
@@ -95,7 +91,7 @@ try:
             else:
                 sys.stderr.write("read %d\n" % (readsofar,))
 
-        request.urlretrieve(Zip_url,"n2n_update_linux.zip",report) # 下载更新包
+        request.urlretrieve(ZipUrl,"n2n_update_linux.zip",report) # 下载更新包
 
 # 解压更新包
 #         Unzip = zipfile.ZipFile("n2n_update.zip", mode='r')
@@ -104,15 +100,13 @@ try:
 #         Unzip.close()
 #         time.sleep(2)
 
-# 删除服务器配置文件并执行更新
-        if os.path.exists('Ver/server.ini'):
-            os.remove('Ver/server.ini')
-        # os.remove('n2n_update.zip')
-        os.system(Shell_Res)
+# 执行更新
+        os.system(Shell)
 
 except:
     logging.debug(traceback.format_exc()) # 输出log
-
+    sys.exit("")
+    
 try:
     if LocalVer == ServerVer:
         os.system("clear")
@@ -123,8 +117,6 @@ try:
 正在查询可用服务器，请稍后...
 \033[0m
 ''')
-        if os.path.exists('Ver/server.ini'):
-            os.remove('Ver/server.ini')
         request.urlretrieve(CsvUrl,CsvRes)
         print('查询完成！')
 except:

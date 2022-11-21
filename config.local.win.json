@@ -1,0 +1,13 @@
+{
+    "server": "http://test.nya-wsl.com:4444",
+    "version": "1.0.5",
+
+"Path":{
+    "csvUrl": "/files/ServerList.csv",
+    "csvRes": "./ServerList.csv",
+    "conUrl": "./files/n2n_config.html",
+    "zipUrl": "/files/n2n_update_linux.zip",
+    "log": "client.log",
+    "batRes": "\\update\\Bat\\update.bat"
+}
+}

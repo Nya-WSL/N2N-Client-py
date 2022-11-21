@@ -1,9 +1,9 @@
 #!/bin/bash
 
 sleep 2
-echo 正在安装unzip
+echo 正在安装unzip...
 sudo apt-get install unzip
-echo 正在结束n2n进程
+echo 正在结束n2n进程...
 pkill n2n
 echo 更新中...
 rm log.ini
