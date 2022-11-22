@@ -6,9 +6,7 @@ sudo apt-get install unzip
 echo 正在结束n2n进程...
 pkill n2n
 echo 更新中...
-rm log.ini
-unzip n2n_update_linux.zip
+unzip -o n2n_update_linux.zip
 rm n2n_update_linux.zip
-echo 即将重启n2n...
-sleep 2
-./n2n_client_linux
+sudo chmod -R 777 *
+echo ！！！更新完成，请重新运行n2n_client！！！
