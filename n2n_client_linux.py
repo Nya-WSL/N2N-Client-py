@@ -2,65 +2,53 @@ import os
 import csv
 import sys
 import time
+import json
 import logging
-import zipfile
+import requests
 import traceback
 from urllib import request
-from configparser import ConfigParser
 
-os.system('') #修复win10的print颜色bug
+# 读取本地配置
+c = open('config.local.linux.json','r')
+text = c.read()
+c.close()
+config = json.loads(text)
 
-# 读取log配置
-LogConfig = ConfigParser()
-LogConfig.read('log.ini')
-LogFile = LogConfig.get('params', 'name')
+ConServerUrl = config["server"] # 读取服务器配置
+
+# 服务器列表获取url和临时保存路径
+CsvUrl = ConServerUrl + config['Path']['csvUrl']
+CsvRes = os.getcwd() + config['Path']['csvRes']
+
+LogFile = config['Path']['log'] # 读取log配置
 
 # 删除旧的log
 if os.path.exists(LogFile):
     os.remove(LogFile)
 
-logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/%m/%d %H:%M:%S") #logging配置
+logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/\
+%m/%d %H:%M:%S") # log配置
 
-# 读取本地配置
-ConServer = ConfigParser()
-ConServer.read('config.local.ini')
+ConUrl = ConServerUrl + config['Path']['conUrl']# 服务器配置文件
 
-ConServerUrl = ConServer.get('Server','server') # 读取服务器配置
+ZipUrl = ConServerUrl + config['Path']['zipUrl'] # 获取更新包url
 
-# 服务器列表获取url和临时保存路径
-CsvUrl = ConServerUrl + ConServer.get('File','csvUrl')
-CsvRes = os.getcwd() + ConServer.get('File','csvRes')
-
-# 服务器配置文件url和临时保存路径
-ConUrl = ConServerUrl + ConServer.get('File','conUrl')
-ConRes = os.getcwd() + ConServer.get('File','conRes')
-
-Zip_url = ConServerUrl + ConServer.get('File','zip_url') #获取更新包url
-
-# 获取服务器配置文件
+# 获取服务器版本信息
+# noinspection PyBroadException
 try:
     print("\n\033[5;31;40m注意：请以管理员权限运行\033[0m\n")
     print("")
     print("\n\033[5;36;40m正在获取服务器版本信息，请稍后...\033[0m\n")
-    request.urlretrieve(ConUrl,ConRes)
-
+    ServerVer = requests.get(ConUrl).text.strip()
+    
 except:
     logging.debug(traceback.format_exc()) # 输出log
 
-# 获取版本配置
-VerLocal = ConfigParser()
-VerLocal.read('./Ver/local.ini')
-VerServer = ConfigParser()
-VerServer.read('./Ver/server.ini')
+# 定义shell脚本路径
+shellRes = config['Path']['shellRes']
+Shell = os.getcwd() + shellRes
 
-# 定义bat脚本路径
-batRes = VerLocal.get('settings','Bat_Res')
-Bat_Res = os.getcwd() + batRes
-
-# 获取版本
-LocalVer = VerLocal.get('settings','version')
-ServerVer = VerServer.get('settings','version')
-
+LocalVer = config['version'] # 获取本地版本
 frontSpace = (50-len(LocalVer))*" " # 计算空格数量
 
 # 打屏
@@ -78,12 +66,10 @@ print(f'''
 ''')
 
 time.sleep(3.5)
-os.system("cls")
+os.system("clear")
 
 try:
-    time.sleep(2)
-    os.system("cls")
-    time.sleep(0.5)
+    # noinspection PyUnboundLocalVariable
     print(f'''──────────────────────────────────────────────────────
      目前版本：{LocalVer}   最新版本：{ServerVer}
 ──────────────────────────────────────────────────────''') # 打印版本
@@ -105,27 +91,25 @@ try:
             else:
                 sys.stderr.write("read %d\n" % (readsofar,))
 
-        request.urlretrieve(Zip_url,"./n2n_update.zip",report) # 下载更新包
+        request.urlretrieve(ZipUrl,"n2n_update_linux.zip",report) # 下载更新包
 
 # 解压更新包
-        Unzip = zipfile.ZipFile("./n2n_update.zip", mode='r')
-        for names in Unzip.namelist():
-            Unzip.extract(names, './update')
-        Unzip.close()
-        time.sleep(2)
+#         Unzip = zipfile.ZipFile("n2n_update.zip", mode='r')
+#         for names in Unzip.namelist():
+#             Unzip.extract(names, os.getcwd())
+#         Unzip.close()
+#         time.sleep(2)
 
-# 删除服务器配置文件和更新包并执行更新
-        if os.path.exists('./Ver/server.ini'):
-            os.remove('./Ver/server.ini')
-        os.remove('n2n_update.zip')
-        os.system(Bat_Res)
+# 执行更新
+        os.system(Shell)
 
 except:
     logging.debug(traceback.format_exc()) # 输出log
-
+    sys.exit("")
+    
 try:
     if LocalVer == ServerVer:
-        os.system("cls")
+        os.system("clear")
         print('''
 \n\033[5;36;40m
 目前已是最新版本！
@@ -133,32 +117,30 @@ try:
 正在查询可用服务器，请稍后...
 \033[0m
 ''')
-        if os.path.exists('./Ver/server.ini'):
-            os.remove('./Ver/server.ini')
         request.urlretrieve(CsvUrl,CsvRes)
         print('查询完成！')
 except:
     logging.debug(traceback.format_exc()) # 输出log
 
-
+# noinspection PyBroadException
 try:
     time.sleep(3)
-    os.system("cls")
+    os.system("clear")
 
     Name = input('''──────────────────────────────────────────────────────
 请输入组名称(分组隔离，不在同一个组将无法组网)：''')
     print('──────────────────────────────────────────────────────')
 
 # 读取服务器列表
-    with open(r'./ServerList.csv',encoding='GB2312',errors='ignore') as csvfile:
+    with open(r'ServerList.csv',encoding='GB2312',errors='ignore') as csvfile:
         reader = csv.reader(csvfile)
         place = [row[0] for row in reader] # 服务器所在地域
 
-    with open(r'./ServerList.csv',encoding='GB2312',errors='ignore') as csvfile:
+    with open(r'ServerList.csv',encoding='GB2312',errors='ignore') as csvfile:
         reader = csv.reader(csvfile)
         address = [row[1] for row in reader] # 服务器IP
 
-        os.system("cls")
+        os.system("clear")
         print('可用服务器列表：')
         print('──────────────────────────────────────────────────────')
         for i in place:
@@ -172,7 +154,7 @@ try:
         print (f'''
 服务器地址:\033[5;36;40m{Server}\033[0m\n''')
         time.sleep(2)
-        os.system("cls")
+        os.system("clear")
 
     Assign = int(input('''
 ──────────────────────────────────────────────────────
@@ -186,7 +168,7 @@ try:
 请输入数字并按回车确认:'''))
 
     time.sleep(1)
-    os.system("cls")
+    os.system("clear")
 
     if Assign == 2:
         print('''
@@ -198,7 +180,7 @@ try:
         input(f'''
 IP:\033[5;36;40m{address}\033[0m\n
 如有误请关闭重新运行，无误请按回车确认''')
-        echo = f"edge -c {Name} -a {address} -l {Server}"
+        echo = f"./edge -c {Name} -a {address} -f -l {Server}"
         os.system(echo)
     if Assign == 1:
         print('''
@@ -206,7 +188,7 @@ IP:\033[5;36;40m{address}\033[0m\n
 │                 Please wait...                    │
 └───────────────────────────────────────────────────┘
 ''')
-        echo = f"edge -c {Name} -l {Server}"
+        echo = f"./edge -c {Name} -f -l {Server}"
         os.system(echo)
     else:
         input('参数错误！请重新启动程式！')

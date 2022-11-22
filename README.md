@@ -1,8 +1,12 @@
 
 
-![python](https://img.shields.io/badge/Python-3.11.0-blue) ![os](https://img.shields.io/badge/OS-Windows-orange) [![CircleCI](https://dl.circleci.com/status-badge/img/gh/Nya-WSL/N2N-Client-py/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/Nya-WSL/N2N-Client-py/tree/main) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/2c57ea2ee77f4860a02479f27d76def0)](https://www.codacy.com/gh/Nya-WSL/N2N-Client-py/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Nya-WSL/N2N-Client-py&amp;utm_campaign=Badge_Grade)
+![python](https://img.shields.io/badge/Version-1.0.7-cyan)![python](https://img.shields.io/badge/Python-3.11.0-blue) ![os](https://img.shields.io/badge/OS-Windows-orange) [![CircleCI](https://dl.circleci.com/status-badge/img/gh/Nya-WSL/N2N-Client-py/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/Nya-WSL/N2N-Client-py/tree/main) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/2c57ea2ee77f4860a02479f27d76def0)](https://www.codacy.com/gh/Nya-WSL/N2N-Client-py/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Nya-WSL/N2N-Client-py&amp;utm_campaign=Badge_Grade)
+
+## Linux版仅支持ubuntu，其他系统请将update.sh中的 `apt-get` 改为该系统的包管理器
 
 ### [如何使用/how to use](./How-To-Use.md)（该文档已过时，仅供参考，新的文档正在编写中）
+
+
 
 # 目前已知公开情报
 
@@ -16,9 +20,20 @@
 ### 基于上方的原理，客户端之间的延迟算法为：
 * p2p：host1到host2的延迟
 * 中转：host1到服务器的延迟 + host2到服务器的延迟
+
+# 联系我们
+
+- 提交issues
+
+- 抄送邮件：support@nya-wsl.com
+
 # 写在最后的废话
 
 我们并不知道这个项目会不会像以前的许多项目一样因为各种各样的原因半路夭折，比如来自现实和工作的压力，比如自身能力的不足，但至少在现在的时间点，我们还保持着热血，还能趁着年少，去做自己喜爱的事情。
+
+
+
+
 
 <center>狐日泽&高橋はるき</center>
 
