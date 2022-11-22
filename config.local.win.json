@@ -1,13 +1,16 @@
 {
     "server": "https://nya-wsl.osttsstudio.ltd",
-    "version": "1.0.5",
+    "version": "1.0.7",
 
 "Path":{
     "csvUrl": "/files/ServerList.csv",
     "csvRes": "./ServerList.csv",
-    "conUrl": "./files/n2n_config.html",
-    "zipUrl": "/files/n2n_update_linux.zip",
+    "conUrl": "/files/n2n_config.html",
+    "zipUrl": "/files/n2n_update_win.zip",
     "log": "client.log",
-    "batRes": "\\update\\Bat\\update.bat"
+    "updateLog": "update.log",
+    "updateUrl": "/files/update.exe",
+    "updateRes": "update.exe",
+    "batRes": "update.bat"
 }
-}
+}   
