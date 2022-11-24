@@ -82,8 +82,8 @@ try:
 # 版本更新
     if LocalVer != ServerVer:
         print("\n\033[5;36;40m更新中，请等待。\033[0m\n")
-    request.urlretrieve(UpdateUrl,UpdateRes)
-    os.system('update.exe')# 执行更新
+        request.urlretrieve(UpdateUrl,UpdateRes)
+        os.system('update.exe')# 执行更新
 
 except:
     logging.debug(traceback.format_exc()) # 输出log
