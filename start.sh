@@ -1,6 +1,7 @@
 #!/bin/bash
 
-sudo apt-get install screen
+rm update.sh
+sudo apt-get install -q screen
 
 screen=$"n2n"
 cmd=$"./n2n_client_linux"
