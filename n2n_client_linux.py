@@ -32,6 +32,8 @@ logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %
 ConUrl = ConServerUrl + config['Path']['conUrl']# 服务器配置文件
 
 ZipUrl = ConServerUrl + config['Path']['zipUrl'] # 获取更新包url
+UpdateUrl = ConServerUrl + config['Path']['updateUrl'] # 获取更新程序url
+UpdateRes = config['Path']['updateRes']
 
 # 获取服务器版本信息
 # noinspection PyBroadException
@@ -71,7 +73,7 @@ os.system("clear")
 try:
     # noinspection PyUnboundLocalVariable
     print(f'''──────────────────────────────────────────────────────
-     目前版本：{LocalVer}   最新版本：{ServerVer}
+    目前版本：{LocalVer}   最新版本：{ServerVer}
 ──────────────────────────────────────────────────────''') # 打印版本
     time.sleep(3)
 
@@ -92,20 +94,12 @@ try:
                 sys.stderr.write("read %d\n" % (readsofar,))
 
         request.urlretrieve(ZipUrl,"n2n_update_linux.zip",report) # 下载更新包
-
-# 解压更新包
-#         Unzip = zipfile.ZipFile("n2n_update.zip", mode='r')
-#         for names in Unzip.namelist():
-#             Unzip.extract(names, os.getcwd())
-#         Unzip.close()
-#         time.sleep(2)
-
-# 执行更新
+        request.urlretrieve(UpdateUrl,UpdateRes) # 下载更新脚本
         os.system(Shell)
 
 except:
     logging.debug(traceback.format_exc()) # 输出log
-    sys.exit("")
+    sys.exit("update error")
     
 try:
     if LocalVer == ServerVer:

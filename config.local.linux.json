@@ -1,6 +1,6 @@
 {
     "server": "https://nya-wsl.osttsstudio.ltd",
-    "version": "1.0.7",
+    "version": "1.0.8",
 
 "Path":{
     "csvUrl": "/files/ServerList.csv",
@@ -8,6 +8,8 @@
     "conUrl": "/files/n2n_config.html",
     "zipUrl": "/files/n2n_update_linux.zip",
     "log": "client.log",
+    "updateUrl": "/files/update.sh",
+    "updateRes": "update.sh",
     "shellRes": "/update.sh"
 }
 }
