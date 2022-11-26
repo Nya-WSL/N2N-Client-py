@@ -36,10 +36,10 @@ version() {
     source /etc/os-release || source /usr/lib/os-release || panic "不支持此操作系统"
     if [[ $ID == "centos" ]]; then
 	    PM="yum"
-	    INS="sudo yum install -y"
+	    INS="sudo yum install -y -q"
     elif [[ $ID == "debian" || $ID == "ubuntu" ]]; then
 	    PM="apt-get"
-	    INS="sudo apt-get install -y"
+	    INS="sudo apt-get install -y -q"
     else
 	    error "不支持此操作系统"
     fi
@@ -71,8 +71,7 @@ update() {
     sudo chmod -R 777 *
     success "更新完成，即将重新运行n2n_client"
     sleep 2
-    screen -S $screen -X quit
-    ./start.sh
+    ./n2n_client
 }
 
 main() {

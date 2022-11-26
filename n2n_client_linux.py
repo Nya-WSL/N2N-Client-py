@@ -95,6 +95,7 @@ try:
 
         request.urlretrieve(ZipUrl,"n2n_update_linux.zip",report) # 下载更新包
         request.urlretrieve(UpdateUrl,UpdateRes) # 下载更新脚本
+        os.system("sudo chmod -R 777 *")
         os.system(Shell)
 
 except:
