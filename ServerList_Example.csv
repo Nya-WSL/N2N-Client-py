@@ -1,0 +1,3 @@
+region/name,ip/domain:port
+test,127.0.0.1:7777
+Tokyo,localhost:7777
