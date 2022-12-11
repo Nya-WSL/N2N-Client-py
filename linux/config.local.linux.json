@@ -1,6 +1,6 @@
 {
     "server": "https://nya-wsl.osttsstudio.ltd",
-    "version": "1.0.8",
+    "version": "1.0.9",
 
 "Path":{
     "csvUrl": "/files/ServerList.csv",
