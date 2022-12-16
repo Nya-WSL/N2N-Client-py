@@ -14,6 +14,33 @@ text = c.read()
 c.close()
 config = json.loads(text)
 
+ConServerUrl = config["server"] # 读取服务器配置
+
+# 服务器列表获取url和临时保存路径
+CsvUrl = ConServerUrl + config['Path']['csvUrl']
+CsvRes = os.getcwd() + config['Path']['csvRes']
+
+LogFile = config['Path']['log'] # 读取log配置
+
+# 删除旧的log
+if os.path.exists(LogFile):
+    os.remove(LogFile)
+
+logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/\
+%m/%d %H:%M:%S") # log配置
+
+ConUrl = ConServerUrl + config['Path']['conUrl']# 服务器配置文件
+
+ZipUrl = ConServerUrl + config['Path']['zipUrl'] # 获取更新包url
+UpdateUrl = ConServerUrl + config['Path']['updateUrl'] # 获取更新程序url
+UpdateRes = config['Path']['updateRes']
+
+HistoryUrl = ConServerUrl + config['Path']['historyUrl']
+HistoryRes = config['Path']['historyRes']
+
+if not os.path.exists("history.json"):
+    request.urlretrieve(HistoryUrl,HistoryRes)
+
 # 读取历史记录
 h = open('history.json',"r")
 text1 = h.read()
@@ -39,27 +66,6 @@ def SaveHistory():
     history["dist"] = AssignJson
     with open("history.json",'w',encoding='utf-8') as f:
         json.dump(history, f,ensure_ascii=False)
-
-ConServerUrl = config["server"] # 读取服务器配置
-
-# 服务器列表获取url和临时保存路径
-CsvUrl = ConServerUrl + config['Path']['csvUrl']
-CsvRes = os.getcwd() + config['Path']['csvRes']
-
-LogFile = config['Path']['log'] # 读取log配置
-
-# 删除旧的log
-if os.path.exists(LogFile):
-    os.remove(LogFile)
-
-logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/\
-%m/%d %H:%M:%S") # log配置
-
-ConUrl = ConServerUrl + config['Path']['conUrl']# 服务器配置文件
-
-ZipUrl = ConServerUrl + config['Path']['zipUrl'] # 获取更新包url
-UpdateUrl = ConServerUrl + config['Path']['updateUrl'] # 获取更新程序url
-UpdateRes = config['Path']['updateRes']
 
 # 获取服务器版本信息
 # noinspection PyBroadException
