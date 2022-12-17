@@ -95,7 +95,7 @@ print(f'''
 ┃ For more information,please visit: www.nya-wsl.com ┃
 ┃    Copyright 2021-2022. All rights reserved.       ┃
 ┠────────────────────────────────────────────────────┨
-┃     Takahashiharuki & SHDocter      2022/12/11     ┃
+┃     Takahashiharuki & SHDocter      2022/12/17     ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ''')
 
@@ -139,7 +139,7 @@ try:
         os.system("clear")
         print('\n\033[5;36;40m目前已是最新版本！\033[0m')
         hist = input(f"是否继续连接{HistoryServer}和组{GroupName}和{AssingText}IP？默认:y(y/N)")
-        if hist == None or "y" or "Y":
+        if hist == "" or hist == "y" or hist == "Y":
             os.system("clear")
             Assign = HistoryAssign
             if Assign == "manual":
@@ -153,9 +153,12 @@ IP:\033[5;36;40m{address}\033[0m\n
                 echo = f"./edge -c {GroupName} -f -l {HistoryServer}"
                 os.system(echo)
             else:
-                input(f'参数错误！错误参数为：{Assign},请确保“history.json”中的“dist”参数为“auto”或者“manual”然后重启程式！')
+                print(f'参数错误！错误参数为：{Assign},请确保“history.json”中的“dist”参数为“auto”或者“manual”，将按照自动分配IP继续运行！')
+                time.sleep(2)
+                echo = f"./edge -c {GroupName} -f -l {HistoryServer}"
+                os.system(echo)
             
-        elif hist == "n" or "N":
+        elif hist == "n" or hist == "N":
             print('\n\033[5;36;40m正在查询可用服务器，请稍后...\033[0m')
             request.urlretrieve(CsvUrl,CsvRes)
             print('查询完成！')
@@ -206,11 +209,6 @@ IP:\033[5;36;40m{address}\033[0m\n
             os.system("clear")
 
             if Assign == 2:
-                print('''
-┌───────────────────────────────────────────────────┐
-│                 Please wait...                    │
-└───────────────────────────────────────────────────┘
-''')
                 address = input('请输入IP地址，并按回车确认（例：127.0.0.1）:')
                 input(f'''
 IP:\033[5;36;40m{address}\033[0m\n
@@ -219,11 +217,6 @@ IP:\033[5;36;40m{address}\033[0m\n
                 SaveHistory()
                 os.system(echo)
             if Assign == 1:
-                print('''
-┌───────────────────────────────────────────────────┐
-│                 Please wait...                    │
-└───────────────────────────────────────────────────┘
-''')
                 echo = f"./edge -c {Name} -f -l {Server}"
                 SaveHistory()
                 os.system(echo)

@@ -97,7 +97,7 @@ print(f'''
 ┃ For more information,please visit: www.nya-wsl.com ┃
 ┃    Copyright 2021-2022. All rights reserved.       ┃
 ┠────────────────────────────────────────────────────┨
-┃     Takahashiharuki & SHDocter      2022/12/11     ┃
+┃     Takahashiharuki & SHDocter      2022/12/17     ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ''')
 
@@ -196,11 +196,6 @@ IP:\033[5;36;40m{address}\033[0m\n
             os.system("cls")
 
             if Assign == 2:
-                print('''
-┌───────────────────────────────────────────────────┐
-│                 Please wait...                    │
-└───────────────────────────────────────────────────┘
-''')
                 address = input('请输入IP地址，并按回车确认（例：127.0.0.1）:')
                 input(f'''
 IP:\033[5;36;40m{address}\033[0m\n
@@ -209,11 +204,6 @@ IP:\033[5;36;40m{address}\033[0m\n
                 SaveHistory()
                 os.system(echo)
             if Assign == 1:
-                print('''
-┌───────────────────────────────────────────────────┐
-│                 Please wait...                    │
-└───────────────────────────────────────────────────┘
-''')
                 echo = f"edge.exe -c {Name} -l {Server}"
                 SaveHistory()
                 os.system(echo)
