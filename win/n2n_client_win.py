@@ -16,8 +16,6 @@ text = c.read()
 c.close()
 config = json.loads(text)
 
-<<<<<<< Updated upstream
-=======
 language = config["language"]
 if not os.path.exists(f"lang/{language}.json"):
     print(f"未发现语言文件'{language}.json'，如果确定配置没问题请重新安装程式！")
@@ -75,7 +73,6 @@ HistoryRes = config["Path"]["historyRes"]
 if not os.path.exists("history.json"):
     request.urlretrieve(HistoryUrl,HistoryRes)
 
->>>>>>> Stashed changes
 # 读取历史记录
 h = open('history.json','r')
 text1 = h.read()
@@ -101,27 +98,6 @@ def SaveHistory():
     history["dist"] = AssignJson
     with open("history.json",'w',encoding='utf-8') as f:
         json.dump(history, f,ensure_ascii=False)
-
-ConServerUrl = config["server"] # 读取服务器配置
-
-# 服务器列表获取url和临时保存路径
-CsvUrl = ConServerUrl + config['Path']['csvUrl']
-CsvRes = os.getcwd() + config['Path']['csvRes']
-
-LogFile = config['Path']['log'] # 读取log配置
-
-# 删除旧的log
-if os.path.exists(LogFile):
-    os.remove(LogFile)
-
-logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/\
-%m/%d %H:%M:%S") # log配置
-
-ConUrl = ConServerUrl + config['Path']['conUrl']# 服务器配置文件
-
-ZipUrl = ConServerUrl + config['Path']['zipUrl'] # 获取更新包url
-UpdateUrl = ConServerUrl + config['Path']['updateUrl'] # 获取更新程序url
-UpdateRes = config['Path']['updateRes']
 
 # 获取服务器版本信息
 # noinspection PyBroadException
@@ -151,11 +127,7 @@ print(f'''
 ┃ For more information,please visit: www.nya-wsl.com ┃
 ┃    Copyright 2021-2022. All rights reserved.       ┃
 ┠────────────────────────────────────────────────────┨
-<<<<<<< Updated upstream
-┃     Takahashiharuki & SHDocter      2022/12/11     ┃
-=======
 ┃     Takahashiharuki & SHDocter      2022/12/19     ┃
->>>>>>> Stashed changes
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ''')
 
@@ -182,15 +154,9 @@ except:
 try:
     if LocalVer == ServerVer:
         os.system("cls")
-<<<<<<< Updated upstream
-        print('\n\033[5;36;40m目前已是最新版本！\033[0m')
-        hist = input(f"是否继续连接{HistoryServer}和组{GroupName}和{AssingText}IP？默认:y(y/N)")
-        if hist == None or "y" or "Y":
-=======
         print(f'\n\033[5;36;40m{LatestVersion}\033[0m')
         hist = input(lang["HistoryChoose"])
         if hist == "" or hist ==  "y" or hist == "Y":
->>>>>>> Stashed changes
             os.system("cls")
             Assign = HistoryAssign
             if Assign == "manual":
@@ -204,12 +170,6 @@ IP:\033[5;36;40m{address}\033[0m\n
                 echo = f"edge.exe -c {GroupName} -l {HistoryServer}"
                 os.system(echo)
             else:
-<<<<<<< Updated upstream
-                input(f'参数错误！错误参数为：{Assign},请确保“history.json”中的“dist”参数为“auto”或者“manual”然后重启程式！')
-            
-        elif hist == "n" or "N":
-            print('\n\033[5;36;40m正在查询可用服务器，请稍后...\033[0m')
-=======
                 print(lang["AssignError"])
                 time.sleep(2)
                 echo = f"edge.exe -c {GroupName} -l {HistoryServer}"
@@ -217,7 +177,6 @@ IP:\033[5;36;40m{address}\033[0m\n
             
         elif hist == "n" or hist == "N":
             print(f'\n\033[5;36;40m{SearchServer}\033[0m')
->>>>>>> Stashed changes
             request.urlretrieve(CsvUrl,CsvRes)
             print(lang["SearchSuccess"])
             time.sleep(3)
@@ -267,16 +226,7 @@ IP:\033[5;36;40m{address}\033[0m\n
             os.system("cls")
 
             if Assign == 2:
-<<<<<<< Updated upstream
-                print('''
-┌───────────────────────────────────────────────────┐
-│                 Please wait...                    │
-└───────────────────────────────────────────────────┘
-''')
-                address = input('请输入IP地址，并按回车确认（例：127.0.0.1）:')
-=======
                 address = input(lang["IP"])
->>>>>>> Stashed changes
                 input(f'''
 IP:\033[5;36;40m{address}\033[0m\n
 {SecondCheck}''')
@@ -284,11 +234,6 @@ IP:\033[5;36;40m{address}\033[0m\n
                 SaveHistory()
                 os.system(echo)
             if Assign == 1:
-                print('''
-┌───────────────────────────────────────────────────┐
-│                 Please wait...                    │
-└───────────────────────────────────────────────────┘
-''')
                 echo = f"edge.exe -c {Name} -l {Server}"
                 SaveHistory()
                 os.system(echo)
