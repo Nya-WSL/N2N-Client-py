@@ -11,6 +11,8 @@
     "log": "client.log",
     "updateUrl": "/files/update.sh",
     "updateRes": "update.sh",
+    "historyUrl": "/files/history.json",
+    "historyRes": "history.json",
     "shellRes": "/update.sh"
 }
 }
