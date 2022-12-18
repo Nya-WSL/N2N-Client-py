@@ -1,6 +1,6 @@
 
 
-![python](https://img.shields.io/badge/Version-1.0.9-cyan) ![python](https://img.shields.io/badge/Python-3.11.0-blue) ![os](https://img.shields.io/badge/OS-Windows-orange) [![CircleCI](https://dl.circleci.com/status-badge/img/gh/Nya-WSL/N2N-Client-py/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/Nya-WSL/N2N-Client-py/tree/main) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/2c57ea2ee77f4860a02479f27d76def0)](https://www.codacy.com/gh/Nya-WSL/N2N-Client-py/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Nya-WSL/N2N-Client-py&amp;utm_campaign=Badge_Grade)
+![python](https://img.shields.io/badge/Version-1.0.8-cyan) ![python](https://img.shields.io/badge/Python-3.11.0-blue) ![os](https://img.shields.io/badge/OS-Windows-orange) [![CircleCI](https://dl.circleci.com/status-badge/img/gh/Nya-WSL/N2N-Client-py/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/Nya-WSL/N2N-Client-py/tree/main) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/2c57ea2ee77f4860a02479f27d76def0)](https://www.codacy.com/gh/Nya-WSL/N2N-Client-py/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Nya-WSL/N2N-Client-py&amp;utm_campaign=Badge_Grade)
 
 ### Linux版请使用root账户运行，目前暂不清楚使用拥有root权限的其他账号运行是否会有bug
 

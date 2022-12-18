@@ -1,5 +1,5 @@
 {
-    "server": "bj.n2n.osttsstudio.ltd:7777",
-    "groupname": "Nya-WSL",
+    "server": "bj.n2n.osttsstudio.ltd",
+    "groupname": "test",
     "dist": "auto"
 }
