@@ -16,11 +16,23 @@ text = c.read()
 c.close()
 config = json.loads(text)
 
-language = config["language"]
-if not os.path.exists(f"lang/{language}.json"):
-    print(f"未发现语言文件'{language}.json'，如果确定配置没问题请重新安装程式！")
-    input(f"The language file '{language}.json' is not found. If the configuration is right, please reinstall the program!")
-    sys.exit("missing language file or config is error")
+LogFile = config["Path"]["log"] # 读取log配置
+
+# 删除旧的log
+if os.path.exists(LogFile):
+    os.remove(LogFile)
+
+logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/\
+%m/%d %H:%M:%S") # log配置
+
+try:
+    language = config["language"]
+    if not os.path.exists(f"lang/{language}.json"):
+        print(f"未发现语言文件'{language}.json'，如果确定配置没问题请重新安装程式！")
+        input(f"The language file '{language}.json' is not found. If the configuration is right, please reinstall the program!")
+        sys.exit(f"missing language file '{language}.json' or config is error")
+except:
+    logging.debug(traceback.format_exc()) # 输出log
 
 # 读取语言配置
 l = open(f'lang/{language}.json', 'r', encoding="utf-8")
@@ -37,6 +49,10 @@ LocalVersion = lang["LocalVersion"]
 ServerVersion = lang["ServerVersion"]
 UpdataText = lang["UpdataText"]
 LatestVersion = lang["LatestVersion"]
+HistoryChoose = lang["HistoryChoose"]
+HistoryChoose1 = lang["HistoryChoose1"]
+HistoryChoose2 = lang["HistoryChoose2"]
+HistoryChoose3 = lang["HistoryChoose3"]
 SecondCheck = lang["SecondCheck"]
 SearchServer = lang["SearchServer"]
 InputGroupName = lang["InputGroupName"]
@@ -51,15 +67,6 @@ ConServerUrl = config["server"] # 读取服务器配置
 # 服务器列表获取url和临时保存路径
 CsvUrl = ConServerUrl + config["Path"]["csvUrl"]
 CsvRes = os.getcwd() + config["Path"]["csvRes"]
-
-LogFile = config["Path"]["log"] # 读取log配置
-
-# 删除旧的log
-if os.path.exists(LogFile):
-    os.remove(LogFile)
-
-logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/\
-%m/%d %H:%M:%S") # log配置
 
 ConUrl = ConServerUrl + config["Path"]["conUrl"]# 服务器配置文件
 
@@ -127,7 +134,7 @@ print(f'''
 ┃ For more information,please visit: www.nya-wsl.com ┃
 ┃    Copyright 2021-2022. All rights reserved.       ┃
 ┠────────────────────────────────────────────────────┨
-┃     Takahashiharuki & SHDocter      2022/12/19     ┃
+┃     Takahashiharuki & SHDocter      2022/12/20     ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ''')
 
@@ -155,7 +162,7 @@ try:
     if LocalVer == ServerVer:
         os.system("cls")
         print(f'\n\033[5;36;40m{LatestVersion}\033[0m')
-        hist = input(lang["HistoryChoose"])
+        hist = input(f"{HistoryChoose}{HistoryServer}{HistoryChoose1}{GroupName}{HistoryChoose2}{AssingText}{HistoryChoose3}")
         if hist == "" or hist ==  "y" or hist == "Y":
             os.system("cls")
             Assign = HistoryAssign
