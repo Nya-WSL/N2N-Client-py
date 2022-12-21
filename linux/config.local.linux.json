@@ -1,17 +1,18 @@
 {
-    "server": "https://nya-wsl.osttsstudio.ltd",
-    "version": "1.1.0",
+    "update_server": "https://cdn.jsdelivr.net/gh/Nya-WSL/N2N-Client-Release/",
+    "resource_server": "https://nya-wsl.osttsstudio.ltd/",
+    "version": "1.1.1",
     "language": "zh_cn",
 
 "Path":{
-    "csvUrl": "/files/ServerList.csv",
+    "csvUrl": "files/ServerList.csv",
     "csvRes": "/ServerList.csv",
-    "conUrl": "/files/n2n_config.html",
-    "zipUrl": "/files/n2n_update_linux.zip",
+    "conUrl": "n2n_config.html",
+    "zipUrl": "linux/latest/n2n_update_linux.zip",
     "log": "client.log",
-    "updateUrl": "/files/update.sh",
+    "updateUrl": "files/update.sh",
     "updateRes": "update.sh",
-    "historyUrl": "/files/history.json",
+    "historyUrl": "files/history.json",
     "historyRes": "history.json",
     "shellRes": "/update.sh"
 }

@@ -1,19 +1,20 @@
 {
-    "server": "https://nya-wsl.osttsstudio.ltd",
-    "version": "1.1.0",
+    "update_server": "https://cdn.jsdelivr.net/gh/Nya-WSL/N2N-Client-Release/",
+    "resource_server": "https://nya-wsl.osttsstudio.ltd/",
+    "version": "1.1.1",
     "language": "zh_cn",
 
 "Path":{
-    "csvUrl": "/files/ServerList.csv",
+    "csvUrl": "files/ServerList.csv",
     "csvRes": "./ServerList.csv",
-    "conUrl": "/files/n2n_config.html",
-    "zipUrl": "/files/n2n_update_win.zip",
+    "conUrl": "n2n_config.html",
+    "zipUrl": "win/latest/n2n_update_win.zip",
     "log": "client.log",
     "updateLog": "update.log",
-    "updateUrl": "/files/update.exe",
+    "updateUrl": "files/update.exe",
     "updateRes": "update.exe",
-    "historyUrl": "/files/history.json",
+    "historyUrl": "files/history.json",
     "historyRes": "history.json",
     "batRes": "update.bat"
 }
-}   
+}
