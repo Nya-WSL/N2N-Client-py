@@ -117,9 +117,9 @@ try:
 except:
     logging.debug(traceback.format_exc()) # 输出log
 
-# 定义Bat脚本路径
-BatRes = config["Path"]["batRes"]
-Bat = os.getcwd() + BatRes
+# 定义shell脚本路径
+shellRes = config['Path']['shellRes']
+Shell = os.getcwd() + shellRes
 
 LocalVer = config["version"] # 获取本地版本
 frontSpace = (50-len(LocalVer))*" " # 计算空格数量
