@@ -60,15 +60,17 @@ ServerIP = lang["ServerIP"]
 AssignText = lang["AssignText"]
 ConfirmText = lang["ConfirmText"]
 
-ConServerUrl = config["server"] # 读取服务器配置
+# 读取服务器配置
+ConServerUrl = config["resource_server"] 
+UpdateServerUrl = config["update_server"]
 
 # 服务器列表获取url和临时保存路径
 CsvUrl = ConServerUrl + config["Path"]["csvUrl"]
 CsvRes = os.getcwd() + config["Path"]["csvRes"]
 
-ConUrl = ConServerUrl + config["Path"]["conUrl"]# 服务器配置文件
+ConUrl = UpdateServerUrl + config["Path"]["conUrl"]# 服务器配置文件
 
-ZipUrl = ConServerUrl + config["Path"]["zipUrl"] # 获取更新包url
+ZipUrl = UpdateServerUrl + config["Path"]["zipUrl"] # 获取更新包url
 UpdateUrl = ConServerUrl + config["Path"]["updateUrl"] # 获取更新程序url
 UpdateRes = config["Path"]["updateRes"]
 
