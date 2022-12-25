@@ -1,7 +1,12 @@
 {
+<<<<<<< Updated upstream
     "update_server": "https://cdn.jsdelivr.net/gh/Nya-WSL/N2N-Client-Release/",
     "resource_server": "https://nya-wsl.osttsstudio.ltd/",
     "version": "1.1.1",
+=======
+    "server": "https://nya-wsl.osttsstudio.ltd",
+    "version": "1.1.0.1",
+>>>>>>> Stashed changes
     "language": "zh_cn",
 
 "Path":{

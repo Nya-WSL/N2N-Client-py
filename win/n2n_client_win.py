@@ -209,8 +209,8 @@ IP:\033[5;36;40m{address}\033[0m\n
                 print('──────────────────────────────────────────────────────')
                 for i in place:
                     print(f"{ServerNumber}%s {ServerName}%s" % (place.index(i) + 1, i))
-                    print('──────────────────────────────────────────────────────')
-                    number = int(input(lang["ServerText"]))
+                print('──────────────────────────────────────────────────────')
+                number = int(input(lang["ServerText"]))
                 if number > len(place) or number < 1: # 判断输入值是否超出范围
                     input(lang["ParameterError"])
                     sys.exit("input error")
