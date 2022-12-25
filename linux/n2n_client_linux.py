@@ -60,17 +60,15 @@ ServerIP = lang["ServerIP"]
 AssignText = lang["AssignText"]
 ConfirmText = lang["ConfirmText"]
 
-# 读取服务器配置
-ConServerUrl = config["resource_server"] 
-UpdateServerUrl = config["update_server"]
+ConServerUrl = config["server"] # 读取服务器配置
 
 # 服务器列表获取url和临时保存路径
 CsvUrl = ConServerUrl + config["Path"]["csvUrl"]
 CsvRes = os.getcwd() + config["Path"]["csvRes"]
 
-ConUrl = UpdateServerUrl + config["Path"]["conUrl"]# 服务器配置文件
+ConUrl = ConServerUrl + config["Path"]["conUrl"]# 服务器配置文件
 
-ZipUrl = UpdateServerUrl + config["Path"]["zipUrl"] # 获取更新包url
+ZipUrl = ConServerUrl + config["Path"]["zipUrl"] # 获取更新包url
 UpdateUrl = ConServerUrl + config["Path"]["updateUrl"] # 获取更新程序url
 UpdateRes = config["Path"]["updateRes"]
 
@@ -117,9 +115,9 @@ try:
 except:
     logging.debug(traceback.format_exc()) # 输出log
 
-# 定义Bat脚本路径
-BatRes = config["Path"]["batRes"]
-Bat = os.getcwd() + BatRes
+# 定义shell脚本路径
+shellRes = config['Path']['shellRes']
+Shell = os.getcwd() + shellRes
 
 LocalVer = config["version"] # 获取本地版本
 frontSpace = (50-len(LocalVer))*" " # 计算空格数量
