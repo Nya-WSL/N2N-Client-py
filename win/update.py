@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import json
+import yaml
 import zipfile
 import logging
 import traceback
@@ -9,10 +10,15 @@ from urllib import request
 
 try:
 # 读取本地配置
-    c = open('config.local.win.json','r')
-    text = c.read()
-    c.close()
-    config = json.loads(text)
+
+    if os.path.exists('config.local.win.json'):
+        c = open('config.local.win.json','r')
+        text = c.read()
+        c.close()
+        config = json.loads(text)
+    else:
+        with open('config.local.win.yml') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
 
     LogFile = config['Path']['updateLog'] # 读取log配置
 
@@ -22,10 +28,6 @@ try:
     ConServerUrl = config["server"] # 读取服务器配置
 
     ZipUrl = ConServerUrl + config['Path']['zipUrl'] # 获取更新包url
-
-# 定义Bat脚本路径
-    BatRes = config['Path']['batRes']
-    Bat = os.getcwd() + BatRes
 
 # 百分比进度条
     def report(blocknum, blocksize, totalsize):
