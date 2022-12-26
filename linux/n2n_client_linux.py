@@ -3,16 +3,21 @@ import csv
 import sys
 import time
 import json
+import yaml
 import logging
 import requests
 import traceback
 from urllib import request
 
 # 读取本地配置
-c = open('config.local.linux.json','r')
-text = c.read()
-c.close()
-config = json.loads(text)
+
+# c = open('config.local.linux.json','r')
+# text = c.read()
+# c.close()
+# config = json.loads(text)
+
+with open('config.local.linux.yml', encoding='utf-8') as f:
+    config = yaml.load(f, Loader=yaml.FullLoader)
 
 LogFile = config["Path"]["log"] # 读取log配置
 
@@ -115,10 +120,6 @@ try:
 except:
     logging.debug(traceback.format_exc()) # 输出log
 
-# 定义shell脚本路径
-shellRes = config['Path']['shellRes']
-Shell = os.getcwd() + shellRes
-
 LocalVer = config["version"] # 获取本地版本
 frontSpace = (50-len(LocalVer))*" " # 计算空格数量
 
@@ -165,7 +166,7 @@ try:
         request.urlretrieve(ZipUrl,"n2n_update_linux.zip",report) # 下载更新包
         request.urlretrieve(UpdateUrl,UpdateRes) # 下载更新脚本
         os.system("sudo chmod -R 777 *")
-        os.system(Shell)
+        os.system(UpdateRes)
 
 except:
     logging.debug(traceback.format_exc()) # 输出log
