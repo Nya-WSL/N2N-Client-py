@@ -3,6 +3,7 @@ import csv
 import sys
 import time
 import json
+import yaml
 import logging
 import requests
 import traceback
@@ -11,10 +12,14 @@ from urllib import request
 os.system("") # 修复win10 print颜色bug
 
 # 读取本地配置
-c = open('config.local.win.json','r')
-text = c.read()
-c.close()
-config = json.loads(text)
+
+# c = open('config.local.win.json','r')
+# text = c.read()
+# c.close()
+# config = json.loads(text)
+
+with open('config.local.win.yml', encoding='utf-8') as f:
+    config = yaml.load(f, Loader=yaml.FullLoader)
 
 LogFile = config["Path"]["log"] # 读取log配置
 
@@ -116,10 +121,6 @@ try:
     
 except:
     logging.debug(traceback.format_exc()) # 输出log
-
-# 定义Bat脚本路径
-BatRes = config["Path"]["batRes"]
-Bat = os.getcwd() + BatRes
 
 LocalVer = config["version"] # 获取本地版本
 frontSpace = (50-len(LocalVer))*" " # 计算空格数量

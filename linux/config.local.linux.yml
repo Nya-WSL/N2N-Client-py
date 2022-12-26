@@ -1,0 +1,16 @@
+server: "https://nya-wsl.osttsstudio.ltd" # 资源文件所在服务器，如果下面的Url部分开头有“/”，末尾不要添加“/”
+version: 1.1.1 # 客户端版本
+language: zh_cn # 客户端语言
+
+Url:
+  csvUrl: "/files/ServerList.csv" # 服务器上的列表文件所在路径
+  conUrl: "/files/n2n_config.html" # 服务器上的版本文件所在路径
+  zipUrl: "/files/n2n_update_win.zip" # 服务器上的更新包所在路径
+  updateUrl: "/files/update.sh" # 获取更新模块的路径
+  historyUrl: "/files/history.json" # n2n连接的默认历史记录，仅本地不存在时下载
+
+Path:
+  log: client.log # 日志保存路径
+  csvRes: "/ServerList.csv" # 服务器列表文件本地保存路径
+  updateRes: update.sh # 更新模块保存路径
+  historyRes: history.json # 历史记录保存路径
