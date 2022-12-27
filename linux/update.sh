@@ -71,7 +71,7 @@ update() {
     sudo chmod -R 777 *
     success "更新完成，即将重新运行n2n_client"
     sleep 2
-    ./n2n_client
+    ./n2n_client_linux
 }
 
 main() {
