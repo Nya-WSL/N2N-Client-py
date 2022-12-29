@@ -54,6 +54,8 @@ try:
     Unzip.close()
     input("update is successful, please press Enter and restart n2n_client.")
     os.remove("n2n_update_win.zip")
+    if os.path.exists('config.local.win.json'):
+        os.remove("config.local.win.json")
     sys.exit("update is successful")
 except:
     logging.debug(traceback.format_exc()) # 输出log
