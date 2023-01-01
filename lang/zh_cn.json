@@ -5,7 +5,7 @@
     "CheckVersion": "正在获取服务器版本信息，请稍后...",
     "LocalVersion": "目前版本",
     "ServerVersion": "最新版本",
-    "UpdataText": "更新中，请等待。",
+    "UpdateText": "更新中，请等待。",
     "LatestVersion": "目前已是最新版本！",
     "HistoryChoose": "是否继续连接",
     "HistoryChoose1": "和组",
