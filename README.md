@@ -15,6 +15,7 @@
 * 项目基于[n2n](https://github.com/ntop/n2n)以及python<s>3.9.5</s>(v1.0.2+ -> <s>3.10.4</s>> | v1.0.6+ -> 3.11.0)和TAP虚拟网卡
 * 因为是公益项目，所以在可以预见的未来，本项目会停止维护，我们不接受任何资金方面的帮助，欢迎有人一起来维护本项目（[GitHub](https://github.com/Nya-WSL/N2N-Client-py)）
 * 因为成本原因，目前节点较少，推荐参考[n2n](https://github.com/ntop/n2n)官方说明自建服务端（todo：取消公益服务器），实测新加坡延迟和大陆差不多（测试环境：Tabletop Simulator）
+* 已知可用环境：Minecraft（java & bedrock）| Overcooked2 | Tabletop Simulator | ······ | 理论上所有通信方式为p2p的环境都可使用（所有测试环境均未考虑服务器带宽限制以及同时使用人数，仅供参考）
 * N2N原理：在NAT环境较好的情况下点对点打洞，也就是所谓的p2p，在NAT环境较复杂或者根本无法打洞的情况下通过服务器中转数据包，也可以设置强制服务器中转，如有这方面需求请运行edge.exe自行跟参
 ### 基于上方的原理，客户端之间的延迟算法为：
 * p2p：host1到host2的延迟
