@@ -26,3 +26,6 @@
 
 - 抄送邮件：support@nya-wsl.com
 
+# LICENSE
+
+- 代码授权协议采用 MIT 协议；[N2N](https://github.com/ntop/n2n)授权协议根据软件作者采用GPLv3协议。
