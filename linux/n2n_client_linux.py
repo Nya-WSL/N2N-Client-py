@@ -149,7 +149,7 @@ try:
 
 # 版本更新
     if LocalVer != ServerVer:
-        print(f"\n\033[5;36;40m{UpdataText}\033[0m\n")
+        print(f"\n\033[5;36;40m{UpdateText}\033[0m\n")
 
 # 百分比进度条
         def report(blocknum, blocksize, totalsize):

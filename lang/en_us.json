@@ -5,7 +5,7 @@
     "CheckVersion": "Checking version, please wait...",
     "LocalVersion": "Current version",
     "ServerVersion": "Latest version",
-    "UpdataText": "Updating, please wait...",
+    "UpdateText": "Updating, please wait...",
     "LatestVersion": "It is the latest version!",
     "HistoryChoose": "Do you want to continue connecting ",
     "HistoryChoose1": " and group ",
