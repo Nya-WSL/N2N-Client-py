@@ -45,8 +45,8 @@ lang = json.loads(LangText)
 
 # 读取语言
 StartText = lang["StartText"]
-AssingTextAuto = lang["AssingTextAuto"]
-AssingTextManual = lang["AssingTextManual"]
+AssignTextAuto = lang["AssignTextAuto"]
+AssignTextManual = lang["AssignTextManual"]
 CheckVersion = lang["CheckVersion"]
 LocalVersion = lang["LocalVersion"]
 ServerVersion = lang["ServerVersion"]

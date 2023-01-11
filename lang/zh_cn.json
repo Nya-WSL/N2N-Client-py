@@ -1,6 +1,6 @@
 {
-    "AssingTextAuto": "自动分配",
-    "AssingTextManual": "手动分配",
+    "AssignTextAuto": "自动分配",
+    "AssignTextManual": "手动分配",
     "StartText": "注意：请以管理员权限运行",
     "CheckVersion": "正在获取服务器版本信息，请稍后...",
     "LocalVersion": "目前版本",

@@ -47,8 +47,8 @@ lang = json.loads(LangText) # 将语言写入字典
 
 # 指定语言所对应的变量
 StartText = lang["StartText"]
-AssingTextAuto = lang["AssingTextAuto"]
-AssingTextManual = lang["AssingTextManual"]
+AssignTextAuto = lang["AssignTextAuto"]
+AssignTextManual = lang["AssignTextManual"]
 CheckVersion = lang["CheckVersion"]
 LocalVersion = lang["LocalVersion"]
 ServerVersion = lang["ServerVersion"]

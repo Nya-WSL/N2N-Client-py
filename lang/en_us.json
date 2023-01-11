@@ -1,6 +1,6 @@
 {
-    "AssingTextAuto": "Auto Assign",
-    "AssingTextManual": "Manual Assign",
+    "AssignTextAuto": "Auto Assign",
+    "AssignTextManual": "Manual Assign",
     "StartText": "Note: Please run with administrator permission.",
     "CheckVersion": "Checking version, please wait...",
     "LocalVersion": "Current version",
