@@ -11,6 +11,18 @@ from urllib import request
 
 os.system("") # 修复win10 print颜色bug
 
+# 检测系统类型
+osInfo = sys.platform
+if osInfo == "win32": # 系统类型
+    clsCommand = "cls" # cmd清屏指令
+    n2nEXE = "edge.exe" # windows的n2n二进制文件
+    configFile = "config.local.win.yml" # windows的配置文件
+
+elif osInfo == "linux": # 系统类型
+    clsCommand = "clear" # 终端清屏指令
+    n2nEXE = "./edge" # linux的n2n二进制文件
+    configFile = "config.local.linux.yml"# linux的配置文件
+
 # 读取本地配置
 
 # c = open('config.local.win.json','r')
@@ -18,7 +30,7 @@ os.system("") # 修复win10 print颜色bug
 # c.close()
 # config = json.loads(text)
 
-with open('config.local.win.yml', encoding='utf-8') as f: # 读取主配置文件
+with open(configFile, encoding='utf-8') as f: # 读取主配置文件
     config = yaml.load(f, Loader=yaml.FullLoader) # 转为字典
 
 LogFile = config["Path"]["log"] # 读取log配置
@@ -98,9 +110,9 @@ HistoryAssign = history["dist"] # 历史IP分配方式
 
 # 获取并定义history.json中dist的值为i18n的值
 if HistoryAssign == "auto":
-    AssingText = AssingTextAuto
+    AssignText = AssignTextAuto
 elif HistoryAssign == "manual":
-    AssingText = AssingTextManual
+    AssignText = AssignTextManual
 
 # 将所选择的连接方式写进history.json
 def SaveHistory():
@@ -142,7 +154,7 @@ print(f'''
 ''')
 
 time.sleep(3.5)
-os.system("cls") # 清屏
+os.system(clsCommand) # 清屏
 
 try:
 # 打印版本
@@ -163,27 +175,27 @@ except:
     
 try:
     if LocalVer == ServerVer:
-        os.system("cls") # 清屏
+        os.system(clsCommand) # 清屏
         print(f'\n\033[5;36;40m{LatestVersion}\033[0m')
-        hist = input(f"{HistoryChoose}{HistoryServer}{HistoryChoose1}{GroupName}{HistoryChoose2}{AssingText}{HistoryChoose3}") # 确认读取历史记录的echo
+        hist = input(f"{HistoryChoose}{HistoryServer}{HistoryChoose1}{GroupName}{HistoryChoose2}{AssignText}{HistoryChoose3}") # 确认读取历史记录的echo
         if hist == "" or hist ==  "y" or hist == "Y": # 上方hist的值为:空/y/Y
-            os.system("cls") # 清屏
+            os.system(clsCommand) # 清屏
             Assign = HistoryAssign # 定义分配方式为历史记录
             if Assign == "manual": # 判断分配方式是否为手动
                 address = input(lang["IP"]) # 手动输入IP段
                 input(f'''
 IP:\033[5;36;40m{address}\033[0m\n
 {SecondCheck}''') # 二次确认
-                echo = f"edge.exe -c {GroupName} -a {address} -l {HistoryServer}" # 定义n2n的参数
+                echo = f"{n2nEXE} -c {GroupName} -a {address} -l {HistoryServer}" # 定义n2n的参数
                 os.system(echo)# 运行n2n的边缘节点并跟参
             if Assign == "auto": # 判断分配方式是否为自动
-                echo = f"edge.exe -c {GroupName} -l {HistoryServer}"# 定义n2n的参数
+                echo = f"{n2nEXE} -c {GroupName} -l {HistoryServer}"# 定义n2n的参数
                 os.system(echo)# 运行n2n的边缘节点并跟参
             # 如果历史记录里的分配方式为错误的值将按照自动分配的方式运行
             else:
                 print(lang["AssignError"]) # 输出error
                 time.sleep(2)
-                echo = f"edge.exe -c {GroupName} -l {HistoryServer}"# 定义n2n的参数
+                echo = f"{n2nEXE} -c {GroupName} -l {HistoryServer}"# 定义n2n的参数
                 os.system(echo)# 运行n2n的边缘节点并跟参
             
         elif hist == "n" or hist == "N": # 上方hist的值为:n/N
@@ -191,7 +203,7 @@ IP:\033[5;36;40m{address}\033[0m\n
             request.urlretrieve(CsvUrl,CsvRes) # 下载可用服务器列表
             print(lang["SearchSuccess"]) # 输出echo
             time.sleep(3)
-            os.system("cls") # 清屏
+            os.system(clsCommand) # 清屏
 
             # 提示用户手动输入组名称
             Name = input(f'''──────────────────────────────────────────────────────
@@ -207,7 +219,7 @@ IP:\033[5;36;40m{address}\033[0m\n
                 reader = csv.reader(csvfile)
                 address = [row[1] for row in reader] # 服务器IP
 
-                os.system("cls") # 清屏
+                os.system(clsCommand) # 清屏
                 print(lang["ServerList"])
                 print('──────────────────────────────────────────────────────')
                 for i in place:
@@ -223,32 +235,32 @@ IP:\033[5;36;40m{address}\033[0m\n
                 print (f'''
 {ServerIP}\033[5;36;40m{Server}\033[0m\n''')
                 time.sleep(2)
-                os.system("cls")
+                os.system(clsCommand)
             # 输出分配方式让用户手动选择
             Assign = int(input(f'''
 ──────────────────────────────────────────────────────
 {AssignText}
 
-1.{AssingTextAuto}
-2.{AssingTextManual}
+1.{AssignTextAuto}
+2.{AssignTextManual}
 
 ──────────────────────────────────────────────────────
 
 {ConfirmText}'''))
 
             time.sleep(1)
-            os.system("cls")
+            os.system(clsCommand)
 
             if Assign == 2: # 手动分配
                 address = input(lang["IP"])
                 input(f'''
 IP:\033[5;36;40m{address}\033[0m\n
 {SecondCheck}''')
-                echo = f"edge.exe -c {Name} -a {address} -l {Server}"
+                echo = f"{n2nEXE} -c {Name} -a {address} -l {Server}"
                 SaveHistory()
                 os.system(echo)
             if Assign == 1: # 自动分配
-                echo = f"edge.exe -c {Name} -l {Server}"
+                echo = f"{n2nEXE} -c {Name} -l {Server}"
                 SaveHistory()
                 os.system(echo)
             else:
