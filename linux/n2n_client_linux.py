@@ -94,9 +94,9 @@ GroupName = history["groupname"]
 HistoryAssign = history["dist"]
 
 if HistoryAssign == "auto":
-    AssingText = AssingTextAuto
+    AssignText = AssignTextAuto
 elif HistoryAssign == "manual":
-    AssingText = AssingTextManual
+    AssignText = AssignTextManual
 
 def SaveHistory():
     if Assign == 1:
@@ -176,7 +176,7 @@ try:
     if LocalVer == ServerVer:
         os.system("clear")
         print(f'\n\033[5;36;40m{LatestVersion}\033[0m')
-        hist = input(f"{HistoryChoose} + {HistoryServer} + {HistoryChoose1} + {GroupName} + {HistoryChoose2} + {AssingText} + {HistoryChoose3}")
+        hist = input(f"{HistoryChoose} + {HistoryServer} + {HistoryChoose1} + {GroupName} + {HistoryChoose2} + {AssignText} + {HistoryChoose3}")
         if hist == "" or hist ==  "y" or hist == "Y":
             os.system("clear")
             Assign = HistoryAssign
@@ -236,8 +236,8 @@ IP:\033[5;36;40m{address}\033[0m\n
 ──────────────────────────────────────────────────────
 {AssignText}
 
-1.{AssingTextAuto}
-2.{AssingTextManual}
+1.{AssignTextAuto}
+2.{AssignTextManual}
 
 ──────────────────────────────────────────────────────
 

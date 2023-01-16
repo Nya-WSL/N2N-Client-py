@@ -147,9 +147,9 @@ print(f'''
 ┠────────────────────────────────────────────────────┨
 ┃                A Project of Nya-WSL.               ┃ 
 ┃ For more information,please visit: www.nya-wsl.com ┃
-┃    Copyright 2021-2022. All rights reserved.       ┃
+┃    Copyright 2021-2023. All rights reserved.       ┃
 ┠────────────────────────────────────────────────────┨
-┃     Takahashiharuki & SHDocter      2022/12/20     ┃
+┃     Takahashiharuki & SHDocter      2023/01/17     ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ''')
 
@@ -165,9 +165,29 @@ try:
 
 # 版本更新
     if LocalVer != ServerVer:
+        
+        def report(blocknum, blocksize, totalsize):
+            readsofar = blocknum * blocksize
+            if totalsize > 0:
+                percent = readsofar * 1e2 / totalsize
+                s = "\r%5.1f%% %*d / %d" % (percent, len(str(totalsize)), readsofar, totalsize)
+                sys.stderr.write(s)
+                if readsofar >= totalsize:
+                    sys.stderr.write("\n")
+            else:
+                sys.stderr.write("read %d\n" % (readsofar,))
+
         print(f"\n\033[5;36;40m{UpdateText}\033[0m\n")
-        request.urlretrieve(UpdateUrl,UpdateRes) # 下载更新模块
-        os.system('update.exe')# 执行更新
+        
+        if osInfo == "win32": # 系统类型
+            request.urlretrieve(UpdateUrl,UpdateRes) # 下载更新模块
+            os.system('update.exe')# 执行更新
+
+        elif osInfo == "linux": # 系统类型
+            request.urlretrieve(ZipUrl,"n2n_update_linux.zip",report) # 下载更新包
+            request.urlretrieve(UpdateUrl,UpdateRes) # 下载更新脚本
+            os.system("sudo chmod -R 777 *")
+            os.system(UpdateRes)
 
 except:
     logging.debug(traceback.format_exc()) # 输出log
