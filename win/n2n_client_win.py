@@ -34,6 +34,8 @@ with open(configFile, encoding='utf-8') as f: # 读取主配置文件
     config = yaml.load(f, Loader=yaml.FullLoader) # 转为字典
 
 LogFile = config["Path"]["log"] # 读取log配置
+CheckServerList = config["check_server_list"]
+AutoUpdate = config["auto_update"]
 
 # 删除旧的log
 if os.path.exists(LogFile):
@@ -78,12 +80,16 @@ ServerName = lang["ServerName"]
 ServerIP = lang["ServerIP"]
 AssignText = lang["AssignText"]
 ConfirmText = lang["ConfirmText"]
+AutoUpdateText = lang["AutoUpdateText"]
+AutoUpdateConfigError = lang["AutoUpdateConfigError"]
+CheckServerListError = lang["CheckServerListError"]
 
 ConServerUrl = config["server"] # 读取服务器配置
 
 # 服务器列表获取url和临时保存路径
 CsvUrl = ConServerUrl + config["Url"]["csvUrl"]
 CsvRes = os.getcwd() + config["Path"]["csvRes"]
+CsvFile = config["Path"]["csvFile"]
 
 ConUrl = ConServerUrl + config["Url"]["conUrl"]# 服务器配置文件
 
@@ -149,7 +155,7 @@ print(f'''
 ┃ For more information,please visit: www.nya-wsl.com ┃
 ┃    Copyright 2021-2023. All rights reserved.       ┃
 ┠────────────────────────────────────────────────────┨
-┃     Takahashiharuki & SHDocter      2023/01/17     ┃
+┃     Takahashiharuki & SHDocter      2023/01/19     ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ''')
 
@@ -166,29 +172,36 @@ try:
 # 版本更新
     if LocalVer != ServerVer:
         
-        def report(blocknum, blocksize, totalsize):
-            readsofar = blocknum * blocksize
-            if totalsize > 0:
-                percent = readsofar * 1e2 / totalsize
-                s = "\r%5.1f%% %*d / %d" % (percent, len(str(totalsize)), readsofar, totalsize)
-                sys.stderr.write(s)
-                if readsofar >= totalsize:
-                    sys.stderr.write("\n")
-            else:
-                sys.stderr.write("read %d\n" % (readsofar,))
+        if AutoUpdate == True:
+            def report(blocknum, blocksize, totalsize):
+                readsofar = blocknum * blocksize
+                if totalsize > 0:
+                    percent = readsofar * 1e2 / totalsize
+                    s = "\r%5.1f%% %*d / %d" % (percent, len(str(totalsize)), readsofar, totalsize)
+                    sys.stderr.write(s)
+                    if readsofar >= totalsize:
+                        sys.stderr.write("\n")
+                else:
+                    sys.stderr.write("read %d\n" % (readsofar,))
 
-        print(f"\n\033[5;36;40m{UpdateText}\033[0m\n")
-        
-        if osInfo == "win32": # 系统类型
-            request.urlretrieve(UpdateUrl,UpdateRes) # 下载更新模块
-            os.system('update.exe')# 执行更新
+            print(f"\n\033[5;36;40m{UpdateText}\033[0m\n")
 
-        elif osInfo == "linux": # 系统类型
-            request.urlretrieve(ZipUrl,"n2n_update_linux.zip",report) # 下载更新包
-            request.urlretrieve(UpdateUrl,UpdateRes) # 下载更新脚本
-            os.system("sudo chmod -R 777 *")
-            os.system(UpdateRes)
+            if osInfo == "win32": # 系统类型
+                request.urlretrieve(UpdateUrl,UpdateRes) # 下载更新模块
+                os.system('update.exe')# 执行更新
 
+            elif osInfo == "linux": # 系统类型
+                request.urlretrieve(ZipUrl,"n2n_update_linux.zip",report) # 下载更新包
+                request.urlretrieve(UpdateUrl,UpdateRes) # 下载更新脚本
+                os.system("sudo chmod -R 777 *")
+                os.system(UpdateRes)
+
+        elif AutoUpdate == False:
+            print(f"{AutoUpdateText}")
+            time.sleep(5)
+        else:
+            input(f"{AutoUpdateConfigError}")
+            sys.exit(f"{AutoUpdateConfigError} | error value:auto_update is {AutoUpdate}")
 except:
     logging.debug(traceback.format_exc()) # 输出log
     sys.exit("") # 防止python捕捉到抛出的error后继续执行程序，手动退出
@@ -206,21 +219,32 @@ try:
                 input(f'''
 IP:\033[5;36;40m{address}\033[0m\n
 {SecondCheck}''') # 二次确认
-                echo = f"{n2nEXE} -c {GroupName} -a {address} -l {HistoryServer}" # 定义n2n的参数
-                os.system(echo)# 运行n2n的边缘节点并跟参
+                if osInfo == "win32":
+                    n2nManual = f"{n2nEXE} -c {GroupName} -a {address} -l {HistoryServer}" # 定义n2n的参数
+                    n2nAuto = f"{n2nEXE} -c {GroupName} -l {HistoryServer}"
+                elif osInfo == "linux":
+                    n2nManual = f"{n2nEXE} -c {GroupName} -a {address} -f -l {HistoryServer}" # 定义n2n的参数
+                    n2nAuto = f"{n2nEXE} -c {GroupName} -f -l {HistoryServer}"
+                os.system(n2nManual)# 运行n2n的边缘节点并跟参
             if Assign == "auto": # 判断分配方式是否为自动
-                echo = f"{n2nEXE} -c {GroupName} -l {HistoryServer}"# 定义n2n的参数
-                os.system(echo)# 运行n2n的边缘节点并跟参
+                os.system(n2nAuto)# 运行n2n的边缘节点并跟参
             # 如果历史记录里的分配方式为错误的值将按照自动分配的方式运行
             else:
                 print(lang["AssignError"]) # 输出error
                 time.sleep(2)
-                echo = f"{n2nEXE} -c {GroupName} -l {HistoryServer}"# 定义n2n的参数
-                os.system(echo)# 运行n2n的边缘节点并跟参
+                os.system(n2nAuto)# 运行n2n的边缘节点并跟参
             
         elif hist == "n" or hist == "N": # 上方hist的值为:n/N
             print(f'\n\033[5;36;40m{SearchServer}\033[0m') # 输出echo
             request.urlretrieve(CsvUrl,CsvRes) # 下载可用服务器列表
+            if CheckServerList == "offline":
+                LocalList = config["Path"]["local_list"]
+                if not os.path.exists(LocalList):
+                    LocalList = CsvFile
+                    print(f"{CheckServerListError}")
+                    time.sleep(5)
+            if CheckServerList == "online":
+                LocalList = CsvFile
             print(lang["SearchSuccess"]) # 输出echo
             time.sleep(3)
             os.system(clsCommand) # 清屏
@@ -231,11 +255,12 @@ IP:\033[5;36;40m{address}\033[0m\n
             print('──────────────────────────────────────────────────────')
 
             # 读取服务器列表
-            with open(r'ServerList.csv',encoding='GB2312',errors='ignore') as csvfile:
+            
+            with open(rf'{LocalList}',encoding='GB2312',errors='ignore') as csvfile:
                 reader = csv.reader(csvfile)
                 place = [row[0] for row in reader] # 服务器所在地域
 
-            with open(r'ServerList.csv',encoding='GB2312',errors='ignore') as csvfile:
+            with open(rf'{LocalList}',encoding='GB2312',errors='ignore') as csvfile:
                 reader = csv.reader(csvfile)
                 address = [row[1] for row in reader] # 服务器IP
 
@@ -276,13 +301,16 @@ IP:\033[5;36;40m{address}\033[0m\n
                 input(f'''
 IP:\033[5;36;40m{address}\033[0m\n
 {SecondCheck}''')
-                echo = f"{n2nEXE} -c {Name} -a {address} -l {Server}"
-                SaveHistory()
-                os.system(echo)
+                if osInfo == "win32":
+                    n2nManual = f"{n2nEXE} -c {GroupName} -a {address} -l {HistoryServer}" # 定义n2n的参数
+                    n2nAuto = f"{n2nEXE} -c {GroupName} -l {HistoryServer}"
+                elif osInfo == "linux":
+                    n2nManual = f"{n2nEXE} -c {GroupName} -a {address} -f -l {HistoryServer}" # 定义n2n的参数
+                    n2nAuto = f"{n2nEXE} -c {GroupName} -f -l {HistoryServer}"
+                os.system(n2nManual)
             if Assign == 1: # 自动分配
-                echo = f"{n2nEXE} -c {Name} -l {Server}"
                 SaveHistory()
-                os.system(echo)
+                os.system(n2nAuto)
             else:
                 input(lang["ParameterError"])
         else: # 上方hist的值出现错误

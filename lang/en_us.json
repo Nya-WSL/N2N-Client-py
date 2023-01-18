@@ -24,5 +24,8 @@
     "ParameterError": "Parameter error! Please restart the program!",
     "ServerIP": "server:",
     "AssignText": "Please select the IP assign method",
-    "ConfirmText": "Please input a number and press Enter："
+    "ConfirmText": "Please input a number and press Enter：",
+    "AutoUpdateText": "Auto update has been skipped! If you want to enable it, please modify the auto_update value in config to True/true!",
+    "AutoUpdateConfigError": "Config is error! Please make sure the auto_update valve in config to True/true or False/false!",
+    "CheckServerListError": "Local server list file was not found. If it is used for the first time, please use the 'ServerList_Example.csv' file is manually written to the list and saved as 'LocalServerList.csv'! The list of 'ServerList.csv' will be used to continue running!"
 }
