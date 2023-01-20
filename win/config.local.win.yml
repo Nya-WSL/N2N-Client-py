@@ -1,6 +1,8 @@
 server: "https://nya-wsl.osttsstudio.ltd" # 资源文件所在服务器，如果下面的Url部分开头有“/”，末尾不要添加“/”
-version: 1.1.1 # 客户端版本
+version: 1.1.2 # 客户端版本
 language: zh_cn # 客户端语言
+check_server_list: online # online: 从服务器获取列表 | offline: 读取本地文件
+auto_update: True # 如果为True，将自动更新；如果为False，只会检测版本而不会自动更新
 
 Url:
   csvUrl: "/files/ServerList.csv" # 服务器上的列表文件所在路径
@@ -12,6 +14,8 @@ Url:
 Path:
   log: client.log # 日志保存路径
   csvRes: "./ServerList.csv" # 服务器列表文件本地保存路径
+  csvFile: "ServerList.csv"
+  local_list: "./LocalServerList.csv"
   updateRes: update.exe # 更新模块保存路径
   updateLog: update.log # win版特有的更新模块日志保存路径
   historyRes: history.json # 历史记录保存路径
