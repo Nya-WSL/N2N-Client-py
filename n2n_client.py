@@ -155,7 +155,9 @@ print(f'''
 ┃ For more information,please visit: www.nya-wsl.com ┃
 ┃    Copyright 2021-2023. All rights reserved.       ┃
 ┠────────────────────────────────────────────────────┨
-┃     Takahashiharuki & SHDocter      2023/01/19     ┃
+┃     Takahashiharuki & SHDocter      2023/01/21     ┃
+┠────────────────────────────────────────────────────┨
+┃              Happy Chinese New Year~~~             ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ''')
 
@@ -227,11 +229,19 @@ IP:\033[5;36;40m{address}\033[0m\n
                     n2nAuto = f"{n2nEXE} -c {GroupName} -f -l {HistoryServer}"
                 os.system(n2nManual)# 运行n2n的边缘节点并跟参
             if Assign == "auto": # 判断分配方式是否为自动
+                if osInfo == "win32":
+                    n2nAuto = f"{n2nEXE} -c {GroupName} -l {HistoryServer}"
+                elif osInfo == "linux":
+                    n2nAuto = f"{n2nEXE} -c {GroupName} -f -l {HistoryServer}"
                 os.system(n2nAuto)# 运行n2n的边缘节点并跟参
             # 如果历史记录里的分配方式为错误的值将按照自动分配的方式运行
             else:
                 print(lang["AssignError"]) # 输出error
                 time.sleep(2)
+                if osInfo == "win32":
+                    n2nAuto = f"{n2nEXE} -c {GroupName} -l {HistoryServer}"
+                elif osInfo == "linux":
+                    n2nAuto = f"{n2nEXE} -c {GroupName} -f -l {HistoryServer}"
                 os.system(n2nAuto)# 运行n2n的边缘节点并跟参
             
         elif hist == "n" or hist == "N": # 上方hist的值为:n/N
@@ -310,6 +320,10 @@ IP:\033[5;36;40m{address}\033[0m\n
                 os.system(n2nManual)
             if Assign == 1: # 自动分配
                 SaveHistory()
+                if osInfo == "win32":
+                    n2nAuto = f"{n2nEXE} -c {GroupName} -l {HistoryServer}"
+                elif osInfo == "linux":
+                    n2nAuto = f"{n2nEXE} -c {GroupName} -f -l {HistoryServer}"
                 os.system(n2nAuto)
             else:
                 input(lang["ParameterError"])
