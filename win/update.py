@@ -9,15 +9,13 @@ import traceback
 from urllib import request
 
 try:
-# 读取本地配置
-
-    if os.path.exists('config.local.win.json'):
-        c = open('config.local.win.json','r')
+    if os.path.exists('config.local.win.json'): # 读取本地配置
+        c = open('config.local.win.json','r', encoding='utf-8')
         text = c.read()
         c.close()
         config = json.loads(text)
     else:
-        with open('config.local.win.yml') as f:
+        with open('config.local.win.yml', encoding='utf-8') as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
 
     LogFile = config['Path']['updateLog'] # 读取log配置
@@ -27,7 +25,7 @@ try:
 
     ConServerUrl = config["server"] # 读取服务器配置
 
-    ZipUrl = ConServerUrl + config['Path']['zipUrl'] # 获取更新包url
+    ZipUrl = ConServerUrl + config['Url']['zipUrl'] # 获取更新包url
 
 # 百分比进度条
     def report(blocknum, blocksize, totalsize):
