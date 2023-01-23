@@ -260,7 +260,7 @@ IP:\033[5;36;40m{address}\033[0m\n
             os.system(clsCommand) # 清屏
 
             # 提示用户手动输入组名称
-            Name = input(f'''──────────────────────────────────────────────────────
+            Gname = input(f'''──────────────────────────────────────────────────────
 {InputGroupName}''')
             print('──────────────────────────────────────────────────────')
 
@@ -312,18 +312,18 @@ IP:\033[5;36;40m{address}\033[0m\n
 IP:\033[5;36;40m{address}\033[0m\n
 {SecondCheck}''')
                 if osInfo == "win32":
-                    n2nManual = f"{n2nEXE} -c {GroupName} -a {address} -l {HistoryServer}" # 定义n2n的参数
-                    n2nAuto = f"{n2nEXE} -c {GroupName} -l {HistoryServer}"
+                    n2nManual = f"{n2nEXE} -c {Gname} -a {address} -l {HistoryServer}" # 定义n2n的参数
+                    n2nAuto = f"{n2nEXE} -c {Gname} -l {HistoryServer}"
                 elif osInfo == "linux":
-                    n2nManual = f"{n2nEXE} -c {GroupName} -a {address} -f -l {HistoryServer}" # 定义n2n的参数
-                    n2nAuto = f"{n2nEXE} -c {GroupName} -f -l {HistoryServer}"
+                    n2nManual = f"{n2nEXE} -c {Gname} -a {address} -f -l {HistoryServer}" # 定义n2n的参数
+                    n2nAuto = f"{n2nEXE} -c {Gname} -f -l {HistoryServer}"
                 os.system(n2nManual)
             if Assign == 1: # 自动分配
                 SaveHistory()
                 if osInfo == "win32":
-                    n2nAuto = f"{n2nEXE} -c {GroupName} -l {HistoryServer}"
+                    n2nAuto = f"{n2nEXE} -c {Gname} -l {HistoryServer}"
                 elif osInfo == "linux":
-                    n2nAuto = f"{n2nEXE} -c {GroupName} -f -l {HistoryServer}"
+                    n2nAuto = f"{n2nEXE} -c {Gname} -f -l {HistoryServer}"
                 os.system(n2nAuto)
             else:
                 input(lang["ParameterError"])
