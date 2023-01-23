@@ -127,7 +127,7 @@ def SaveHistory():
     if Assign == 2:
         AssignJson = "manual"
     history["server"] = Server
-    history["groupname"] = Name
+    history["groupname"] = Gname
     history["dist"] = AssignJson
     with open("history.json",'w',encoding='utf-8') as f:
         json.dump(history, f,ensure_ascii=False)
@@ -307,23 +307,24 @@ IP:\033[5;36;40m{address}\033[0m\n
             os.system(clsCommand)
 
             if Assign == 2: # 手动分配
+                SaveHistory()
                 address = input(lang["IP"])
                 input(f'''
 IP:\033[5;36;40m{address}\033[0m\n
 {SecondCheck}''')
                 if osInfo == "win32":
-                    n2nManual = f"{n2nEXE} -c {Gname} -a {address} -l {HistoryServer}" # 定义n2n的参数
-                    n2nAuto = f"{n2nEXE} -c {Gname} -l {HistoryServer}"
+                    n2nManual = f"{n2nEXE} -c {Gname} -a {address} -l {Server}" # 定义n2n的参数
+                    n2nAuto = f"{n2nEXE} -c {Gname} -l {Server}"
                 elif osInfo == "linux":
-                    n2nManual = f"{n2nEXE} -c {Gname} -a {address} -f -l {HistoryServer}" # 定义n2n的参数
-                    n2nAuto = f"{n2nEXE} -c {Gname} -f -l {HistoryServer}"
+                    n2nManual = f"{n2nEXE} -c {Gname} -a {address} -f -l {Server}" # 定义n2n的参数
+                    n2nAuto = f"{n2nEXE} -c {Gname} -f -l {Server}"
                 os.system(n2nManual)
             if Assign == 1: # 自动分配
                 SaveHistory()
                 if osInfo == "win32":
-                    n2nAuto = f"{n2nEXE} -c {Gname} -l {HistoryServer}"
+                    n2nAuto = f"{n2nEXE} -c {Gname} -l {Server}"
                 elif osInfo == "linux":
-                    n2nAuto = f"{n2nEXE} -c {Gname} -f -l {HistoryServer}"
+                    n2nAuto = f"{n2nEXE} -c {Gname} -f -l {Server}"
                 os.system(n2nAuto)
             else:
                 input(lang["ParameterError"])
