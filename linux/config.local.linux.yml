@@ -12,7 +12,6 @@ Url:
   historyUrl: "/files/history.json" # n2n连接的默认历史记录，仅本地不存在时下载
 
 Path:
-  log: client.log # 日志保存路径
   csvRes: "/ServerList.csv" # 服务器列表文件本地保存路径
   csvFile: "ServerList.csv"
   local_list: "/LocalServerList.csv"

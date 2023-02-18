@@ -4,9 +4,8 @@ import sys
 import time
 import json
 import yaml
-import logging
+import datetime
 import requests
-import traceback
 from urllib import request
 
 os.system("") # 修复win10 print颜色bug
@@ -33,25 +32,37 @@ elif osInfo == "linux": # 系统类型
 with open(configFile, encoding='utf-8') as f: # 读取主配置文件
     config = yaml.load(f, Loader=yaml.FullLoader) # 转为字典
 
-LogFile = config["Path"]["log"] # 读取log配置
 CheckServerList = config["check_server_list"]
 AutoUpdate = config["auto_update"]
 
-# 删除旧的log
-if os.path.exists(LogFile):
-    os.remove(LogFile)
+workDir = os.getcwd() + "logs"
+# 错误处理
+class Mylogpetion():
+    def __init__(self):
+        import traceback
+        import logging
+# logging的基本配置
+        errorTime = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')  # 获取错误时间
+        logging.basicConfig(
+            filename=f'{workDir}\\debug_{errorTime}.txt',              # 当前文件写入位置
+            format='%(asctime)s %(levelname)s \n %(message)s',             # 格式化存储的日志格式
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+# 写入日志
+        logging.debug(traceback.format_exc())
 
-logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/\
-%m/%d %H:%M:%S") # log配置
+# logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/\
+# %m/%d %H:%M:%S") # log配置
 
 try:
     language = config["language"] #读取语言文件的字典
     if not os.path.exists(f"lang/{language}.json"):
-        print(f"未发现语言文件'{language}.json'，如果确定配置没问题请重新安装程式！")
-        input(f"The language file '{language}.json' is not found. If the configuration is right, please reinstall the program!")
+        input(f"""
+未发现语言文件'{language}.json'，如果确定配置没问题请重新安装程式！
+The language file '{language}.json' is not found. If the configuration is right, please reinstall the program!""")
         sys.exit(f"missing language file '{language}.json' or config is error") # 带参退出并写入log
 except:
-    logging.debug(traceback.format_exc()) # 输出log
+    Mylogpetion()
 
 # 读取语言配置
 l = open(f'lang/{language}.json', 'r', encoding="utf-8") # 将语言文件写入缓存
@@ -140,7 +151,7 @@ try:
     ServerVer = requests.get(ConUrl).text # 从资源文件服务器获取版本号
     
 except:
-    logging.debug(traceback.format_exc()) # 输出log
+    Mylogpetion()
 
 LocalVer = config["version"] # 获取本地版本
 frontSpace = (50-len(LocalVer))*" " # 计算空格数量
@@ -205,7 +216,7 @@ try:
             input(f"{AutoUpdateConfigError}")
             sys.exit(f"{AutoUpdateConfigError} | error value:auto_update is {AutoUpdate}")
 except:
-    logging.debug(traceback.format_exc()) # 输出log
+    Mylogpetion()
     sys.exit("") # 防止python捕捉到抛出的error后继续执行程序，手动退出
     
 try:
@@ -333,4 +344,4 @@ IP:\033[5;36;40m{address}\033[0m\n
             sys.exit("history choose is error") # 抛出错误写入log并退出
             
 except:
-    logging.debug(traceback.format_exc()) # 输出log
+    Mylogpetion()
