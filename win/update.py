@@ -7,7 +7,9 @@ import zipfile
 import datetime
 from urllib import request
 
-workDir = os.getcwd() + "logs"
+workDir = os.getcwd() + "\\logs"
+if not os.path.exists("logs"):
+    os.mkdir(workDir)
 # 错误处理
 class Mylogpetion():
     def __init__(self):
@@ -18,6 +20,7 @@ class Mylogpetion():
         logging.basicConfig(
             filename=f'{workDir}\\debug_{errorTime}.txt',              # 当前文件写入位置
             format='%(asctime)s %(levelname)s \n %(message)s',             # 格式化存储的日志格式
+            level=logging.DEBUG,
             datefmt='%Y-%m-%d %H:%M:%S'
         )
 # 写入日志

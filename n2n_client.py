@@ -4,6 +4,7 @@ import sys
 import time
 import json
 import yaml
+import ctypes
 import datetime
 import requests
 from urllib import request
@@ -35,7 +36,9 @@ with open(configFile, encoding='utf-8') as f: # 读取主配置文件
 CheckServerList = config["check_server_list"]
 AutoUpdate = config["auto_update"]
 
-workDir = os.getcwd() + "logs"
+workDir = os.getcwd() + "\\logs"
+if not os.path.exists("logs"):
+    os.mkdir(workDir)
 # 错误处理
 class Mylogpetion():
     def __init__(self):
@@ -46,6 +49,7 @@ class Mylogpetion():
         logging.basicConfig(
             filename=f'{workDir}\\debug_{errorTime}.txt',              # 当前文件写入位置
             format='%(asctime)s %(levelname)s \n %(message)s',             # 格式化存储的日志格式
+            level=logging.DEBUG,
             datefmt='%Y-%m-%d %H:%M:%S'
         )
 # 写入日志
@@ -56,6 +60,17 @@ class Mylogpetion():
 
 try:
     language = config["language"] #读取语言文件的字典
+    if language == "auto":
+        dll_h = ctypes.windll.kernel32
+        SysLang = hex(dll_h.GetSystemDefaultUILanguage())
+        if SysLang == "0x804":
+            language = "zh_cn"
+        elif SysLang == "0x409":
+            language = "en_us"
+        else:
+            language = config["default_lang"]
+    else:
+        language = config["language"]
     if not os.path.exists(f"lang/{language}.json"):
         input(f"""
 未发现语言文件'{language}.json'，如果确定配置没问题请重新安装程式！
