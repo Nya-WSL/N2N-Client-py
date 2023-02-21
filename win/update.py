@@ -4,9 +4,27 @@ import time
 import json
 import yaml
 import zipfile
-import logging
-import traceback
+import datetime
 from urllib import request
+
+workDir = os.getcwd() + "\\logs"
+if not os.path.exists("logs"):
+    os.mkdir(workDir)
+# 错误处理
+class Mylogpetion():
+    def __init__(self):
+        import traceback
+        import logging
+# logging的基本配置
+        errorTime = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')  # 获取错误时间
+        logging.basicConfig(
+            filename=f'{workDir}\\debug_{errorTime}.txt',              # 当前文件写入位置
+            format='%(asctime)s %(levelname)s \n %(message)s',             # 格式化存储的日志格式
+            level=logging.DEBUG,
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+# 写入日志
+        logging.debug(traceback.format_exc())
 
 try:
     if os.path.exists('config.local.win.json'): # 读取本地配置
@@ -17,11 +35,6 @@ try:
     else:
         with open('config.local.win.yml', encoding='utf-8') as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-
-    LogFile = config['Path']['updateLog'] # 读取log配置
-
-    logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/\
-%m/%d %H:%M:%S") # log配置
 
     ConServerUrl = config["server"] # 读取服务器配置
 
@@ -56,4 +69,4 @@ try:
         os.remove("config.local.win.json")
     sys.exit("update is successful")
 except:
-    logging.debug(traceback.format_exc()) # 输出log
+    Mylogpetion() # 输出log

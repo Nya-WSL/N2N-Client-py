@@ -33,7 +33,7 @@ panic() {
 }
 
 version() {
-    source /etc/os-release || source /usr/lib/os-release || panic "不支持此操作系统"
+    source /etc/os-release || source /usr/lib/os-release || panic "不支持此操作系统 | system is not supported"
     if [[ $ID == "centos" ]]; then
 	    PM="yum"
 	    INS="sudo yum install -y -q"
@@ -41,13 +41,13 @@ version() {
 	    PM="apt-get"
 	    INS="sudo apt-get install -y -q"
     else
-	    error "不支持此操作系统"
+	    error "不支持此操作系统 | system is not supported"
     fi
 }
 
 
 install() {
-    info "正在安装软件包"
+    info "正在安装软件包 | installing package"
     rpm_packages="unzip openssl"
     apt_packages="unzip openssl"
     if [[ $PM == "apt-get" ]]; then
@@ -58,18 +58,19 @@ install() {
         $PM update
 	    $INS $rpm_packages
     fi
-    success "软件包安装成功"
+    success "软件包安装成功 | package installed successfully"
 }
 
 update() {
     sleep 2
-    info "正在结束n2n进程..."
+    info "正在结束n2n进程... | stopping n2n process..."
     pkill n2n
-    info "更新中..."
+    info "更新中... | updating"
     unzip -o n2n_update_linux.zip
     rm n2n_update_linux.zip
+    rm config.local.linux.json
     sudo chmod -R 777 *
-    success "更新完成，即将重新运行n2n_client"
+    success "更新完成，即将重新运行n2n_client | update is complete, n2n_client will be restart"
     sleep 2
     ./n2n_client_linux
 }
