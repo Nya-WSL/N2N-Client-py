@@ -181,9 +181,7 @@ print(f'''
 ┃ For more information,please visit: www.nya-wsl.com ┃
 ┃    Copyright 2021-2023. All rights reserved.       ┃
 ┠────────────────────────────────────────────────────┨
-┃     Takahashiharuki & SHDocter      2023/01/21     ┃
-┠────────────────────────────────────────────────────┨
-┃              Happy Chinese New Year~~~             ┃
+┃               Nya-WSL      2023/04/12              ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ''')
 
