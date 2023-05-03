@@ -55,9 +55,6 @@ class Mylogpetion():
 # 写入日志
         logging.debug(traceback.format_exc())
 
-# logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/\
-# %m/%d %H:%M:%S") # log配置
-
 try:
     language = config["language"] #读取语言文件的字典
     if language == "auto":
@@ -181,7 +178,7 @@ print(f'''
 ┃ For more information,please visit: www.nya-wsl.com ┃
 ┃    Copyright 2021-2023. All rights reserved.       ┃
 ┠────────────────────────────────────────────────────┨
-┃               Nya-WSL      2023/04/12              ┃
+┃               Nya-WSL      2023/05/03              ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ''')
 
