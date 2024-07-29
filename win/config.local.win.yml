@@ -1,5 +1,5 @@
 server: "https://qn.nya-wsl.cn" # 资源文件所在服务器，如果下面的Url部分开头有“/”，末尾不要添加“/”
-version: 1.1.3 # 客户端版本
+version: 2.0.0 # 客户端版本
 language: auto # 客户端语言，auto=自动识别,可手动指定语言
 default_lang: en_us # 自动识别失败的默认语言
 check_server_list: online # online: 从服务器获取列表 | offline: 读取本地文件
