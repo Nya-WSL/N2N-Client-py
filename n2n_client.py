@@ -1,10 +1,10 @@
 import os
 import csv
 import sys
+import json
 import shlex
 import ctypes
 import asyncio
-import platform
 import datetime
 import requests
 import subprocess
@@ -79,95 +79,101 @@ elif osInfo == "linux": # 系统类型
 # CheckServerList = config["check_server_list"]
 # AutoUpdate = config["auto_update"]
 
-# language = config["language"] #读取语言文件的字典
-# if language == "auto":
-#     dll_h = ctypes.windll.kernel32
-#     SysLang = hex(dll_h.GetSystemDefaultUILanguage())
-#     if SysLang == "0x804":
-#         language = "zh_cn"
-#     elif SysLang == "0x409":
-#         language = "en_us"
-#     else:
-#         language = config["default_lang"]
-# else:
-#     language = config["language"]
-# if not os.path.exists(f"lang/{language}.json"):
-#     ui.notify(f"{language}.json is not exists!", type="error")
+language = app.storage.general["language"] #读取语言文件的字典
+if language == "auto":
+    # dll_h = ctypes.windll.kernel32
+    SysLang = hex(ctypes.windll.kernel32.GetSystemDefaultUILanguage())
+    if SysLang == "0x804":
+        language = "zh_cn"
+    elif SysLang == "0x409":
+        language = "en_us"
+    elif SysLang == "0x411":
+        language = "ja_jp"
+    else:
+        language = app.storage.general["default_lang"]
+else:
+    language = app.storage.general["language"]
 
-# with open(f"lang/{language}.json", encoding="utf-8") as l: # 读取语言文件
-#     LangText = l.read()
-#     lang = json.loads(LangText)
+if not os.path.exists(f"lang/{language}.json"):
+    ui.notify(f"{language}.json is not exists!", type="error")
+    language = False
 
-# StartText = lang["StartText"]
-# AssignTextAuto = lang["AssignTextAuto"]
-# AssignTextManual = lang["AssignTextManual"]
-# CheckVersion = lang["CheckVersion"]
-# LocalVersion = lang["LocalVersion"]
-# ServerVersion = lang["ServerVersion"]
-# UpdateText = lang["UpdateText"]
-# LatestVersion = lang["LatestVersion"]
-# HistoryChoose = lang["HistoryChoose"]
-# HistoryChoose1 = lang["HistoryChoose1"]
-# HistoryChoose2 = lang["HistoryChoose2"]
-# HistoryChoose3 = lang["HistoryChoose3"]
-# SecondCheck = lang["SecondCheck"]
-# SearchServer = lang["SearchServer"]
-# InputGroupName = lang["InputGroupName"]
-# ServerNumber = lang["ServerNumber"]
-# ServerName = lang["ServerName"]
-# ServerIP = lang["ServerIP"]
-# AssignText = lang["AssignText"]
-# ConfirmText = lang["ConfirmText"]
-# AutoUpdateText = lang["AutoUpdateText"]
-# AutoUpdateConfigError = lang["AutoUpdateConfigError"]
-# CheckServerListError = lang["CheckServerListError"]
+lang = ""
+if language != False:
+    with open(f"lang/{language}.json", encoding="utf-8") as l: # 读取语言文件
+        LangText = l.read()
+        lang = json.loads(LangText)
+
+TabHomeName = lang["TabHomeName"]
+TabSettingsName = lang["TabSettingsName"]
+ipInputSwitchLang = lang["ipInputSwitch"]
+ServerSelectLang = lang["ServerSelect"]
+GroupNameInputLang = lang["GroupNameInput"]
+ipInputLang = lang["ipInput"]
+connButtonLang = lang["connButton"]
+GlobalSettings = lang["GlobalSettings"]
+ServerSettings = lang["ServerSettings"]
+LocalSettings = lang["LocalSettings"]
+LangSelect = lang["LangSelect"]
+DefaultLanguageSelectLang = lang["DefaultLanguageSelect"]
+ServerUrl = lang["ServerUrl"]
+AutoUpdate = lang["AutoUpdate"]
+CheckServerList = lang["CheckServerList"]
+CheckUpdateButtonLang = lang["CheckUpdateButton"]
+csvUrlLang = lang["csvUrl"]
+VersionCheckUrl = lang["VersionCheckUrl"]
+ZipUrlLang = lang["ZipUrl"]
+UpdateProgramUrl = lang["UpdateProgramUrl"]
+csvPathLang = lang["csvPath"]
+LocalListPathLang = lang["LocalListPath"]
+UpdateProgramName = lang["UpdateProgramName"]
 
 # ConServerUrl = config["server"] # 读取服务器配置
 with ui.tabs().classes('w-full') as tabs:
-    ui.tab('home', '首页', icon='home')
-    ui.tab('settings', '设置', icon='settings')
+    ui.tab('home', TabHomeName, icon='home')
+    ui.tab('settings', TabSettingsName, icon='settings')
 with ui.tab_panels(tabs, value='home').classes('w-full'):
     with ui.tab_panel('settings'):
         with ui.row():
-            with ui.column(align_items="center"):
-                with ui.row():
-                    LanguageSelect = ui.select(label="Language", options={"auto":"Auto", "zh_CN":"简体中文", "en_US":"English"}, value="auto").style("width: 100px").bind_value(app.storage.general, "language")
-                    DefaultLanguageSelect = ui.select(label="Default Language", options={"zh_CN":"简体中文", "en_US":"English"}, value="en_US").style("width: 140px").bind_value(app.storage.general, "default_lang")
-                serverUrl = ui.input(label="Server URL").bind_value(app.storage.general, "server")
-                AutoUpdateSwitch = ui.switch(text="自动更新", value=True).bind_value(app.storage.general, "auto_update")
-                CheckServerListSwitch = ui.switch(text="联网获取节点", value=True).bind_value(app.storage.general, "check_server_list")
-                checkUpdateButton = ui.button(text="Check Update")
             with ui.column():
-                csvUrl = ui.input(label="CSV URL", value="files/ServerList.csv").bind_value(app.storage.general, "csvUrl")
-                updateCheckUrl = ui.input(label="Update Check URL", value="files/n2n_config.html").bind_value(app.storage.general, "conUrl")
-                zipUrl = ui.input(label="Zip URL", value="files/n2n_update_win.zip").bind_value(app.storage.general, "zipUrl")
-                updateUrl = ui.input(label="Update URL", value="files/update.exe").bind_value(app.storage.general, "updateUrl")
-                historyUrl = ui.input(label="History URL", value="files/history.json").bind_value(app.storage.general, "historyUrl")
+                AutoUpdateSwitch = ui.switch(text=AutoUpdate, value=True).bind_value(app.storage.general, "auto_update")
+                CheckServerListSwitch = ui.switch(text=CheckServerList, value=True).bind_value(app.storage.general, "check_server_list")
+                checkUpdateButton = ui.button(text=CheckUpdateButtonLang)
             with ui.column():
-                csvPath = ui.input(label="CSV File Path", value="./ServerList.csv").bind_value(app.storage.general, "csvPath")
-                csvFile = ui.input(label="CSV File Name", value="ServerList.csv").bind_value(app.storage.general, "csvFile")
-                localListPath = ui.input(label="Local List Path", value="./local_list.csv").bind_value(app.storage.general, "local_list")
-                updateFile = ui.input(label="Update Program Name", value="update.exe").bind_value(app.storage.general, "updateFile")
-                historyFile = ui.input(label="History File Name", value="history.txt").bind_value(app.storage.general, "historyFile")
+                ui.badge(GlobalSettings, outline=True)
+                LanguageSelect = ui.select(label=LangSelect, options={"auto":"Auto", "zh_CN":"简体中文", "en_US":"English"}, value="auto").style("width: 140px").bind_value(app.storage.general, "language")
+                DefaultLanguageSelect = ui.select(label=DefaultLanguageSelectLang, options={"zh_CN":"简体中文", "en_US":"English"}, value="en_US").style("width: 140px").bind_value(app.storage.general, "default_lang")
+                serverUrl = ui.input(label=ServerUrl).style("width: 140px").bind_value(app.storage.general, "server")
+            with ui.column():
+                ui.badge(ServerSettings, outline=True)
+                csvUrl = ui.input(label=csvUrlLang, value="files/ServerList.csv").bind_value(app.storage.general, "csvUrl")
+                updateCheckUrl = ui.input(label=VersionCheckUrl, value="files/n2n_config.html").bind_value(app.storage.general, "conUrl")
+                zipUrl = ui.input(label=ZipUrlLang, value="files/n2n_update_win.zip").bind_value(app.storage.general, "zipUrl")
+                updateUrl = ui.input(label=UpdateProgramUrl, value="files/update.exe").bind_value(app.storage.general, "updateUrl")
+            with ui.column():
+                ui.badge(LocalSettings, outline=True)
+                csvPath = ui.input(label=csvPathLang, value="ServerList.csv").bind_value(app.storage.general, "csvPath")
+                localListPath = ui.input(label=LocalListPathLang, value="local_list.csv").bind_value(app.storage.general, "local_list")
+                updateFile = ui.input(label=UpdateProgramName, value="update.exe").bind_value(app.storage.general, "updateFile")
     with ui.tab_panel('home'):
         with ui.row().classes("w-full"):
             with ui.card(align_items="center").classes("w-full"):
-                ipInputSwitch = ui.switch("自动分配IP", value=True, on_change=ShowIpInput)
+                ipInputSwitch = ui.switch("自动分配IP", value=True, on_change=ShowIpInput())
                 with ui.row():
-                    ServerSelect = ui.select(label="选择服务器", options=GetServer()).style("width: 120px").bind_value(app.storage.general, "N2N_Server")
-                    groupNameInput = ui.input(label="组名称").bind_value(app.storage.general, "GroupName")
-                    ipInput = ui.input("本机IP").style("width: 120px").bind_value(app.storage.general, "LAN_IP")
+                    ServerSelect = ui.select(label=ServerSelectLang, options=GetServer()).style("width: 120px").bind_value(app.storage.general, "N2N_Server")
+                    groupNameInput = ui.input(label=GroupNameInputLang).bind_value(app.storage.general, "GroupName")
+                    ipInput = ui.input(ipInputLang).style("width: 120px").bind_value(app.storage.general, "LAN_IP")
                     ipInput.set_enabled(False)
                 cmd = ""
                 if ipInputSwitch.value:
                     cmd = f"{n2n} -c {groupNameInput.value} -l {ServerSelect.value}"
                 else:
                     cmd = f"{n2n} -c {groupNameInput.value} -a {ipInput.value} -l {ServerSelect.value}"
-                connButton = ui.button("连接", on_click=lambda: run_command(cmd))
+                connButton = ui.button(connButtonLang, on_click=lambda: run_command(cmd))
         with ui.card().classes('w-full'):
             with ui.scroll_area().classes('w-full') as area:
                 result = ui.markdown()
 
-port_label = ui.label(native.find_open_port()).bind_text_to(app.storage.general, "native_port")
+port_label = ui.label(native.find_open_port(65000, 65525)).bind_text(app.storage.general, "native_port")
 port_label.set_visibility(False)
-ui.run(port=int(port_label.text), title=f"N2N Client | Nya-WSL v{version}", native=True, reload=False, window_size=[705, 700])
+ui.run(port=int(port_label.text), title=f"N2N Client | Nya-WSL v{version}", native=True, reload=False, window_size=[740, 700])
