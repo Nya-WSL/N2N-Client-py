@@ -16,6 +16,15 @@ app.storage.general.indent = True
 # env_cmd = r"setx NICEGUI_STORAGE_PATH %s /m"%"config"
 # os.system(env_cmd)
 
+def check_port():
+    if portSetting.value == "" or int(portSetting.value) < 1 or int(portSetting.value) > 65525:
+        print("Port is error! Will search for available IP!")
+        port = native.find_open_port(65001, 65525)
+        portSetting.set_value(port)
+    else:
+        port = portSetting.value
+    return int(port)
+
 def stop_command():
     process.kill()
     connButton.set_text("连接")
@@ -103,6 +112,9 @@ if osInfo == "win32": # 系统类型
 elif osInfo == "linux": # 系统类型
     n2n = "./edge" # linux的n2n二进制文件
 
+with open("lang/global.json", "r", encoding="utf-8") as f:
+    global_lang = json.load(f)
+
 if os.path.exists(".nicegui/storage-general.json"):
     language = app.storage.general["language"] #读取语言文件的字典
 else:
@@ -125,13 +137,37 @@ if language == "auto":
 else:
     language = app.storage.general["language"]
 
-if not os.path.exists(f"lang/{language}.json"):
+lang = {
+    "TabHomeName": "Home",
+    "TabSettingsName": "Settings",
+    "ipInputSwitch": "Auto Assign IP",
+    "ServerSelect": "Select Server",
+    "GroupNameInput": "Group Name",
+    "ipInput": "LAN IP",
+    "connButton": "connect",
+    "GlobalSettings": "Global Settings",
+    "ServerSettings": "Server Settings",
+    "LocalSettings": "Local Settings",
+    "LangSelect": "Language",
+    "DefaultLanguageSelect": "Default Language",
+    "ServerUrl": "Asset Server",
+    "AutoUpdate": "Auto Update",
+    "CheckServerList": "Get Server List",
+    "CheckUpdateButton": "Check Update",
+    "csvUrl": "CSV File Path",
+    "VersionCheckUrl": "Version File Path",
+    "ZipUrl": "Update File Path",
+    "UpdateProgramUrl": "Update Program Path",
+    "csvPath": "CSV File Name",
+    "LocalListPath": "Local Server Path",
+    "UpdateProgramName": "Update Program Name",
+    "NativePort": "GUI Run Port"
+}
+
+if not os.path.exists(f"lang/{language}.json"): # 检查语言文件是否存在
     ui.notify(f"{language}.json is not exists!", type="error")
     print(f"{language}.json is not exists!")
-    language = False
-
-lang = ""
-if language != False:
+else:
     with open(f"lang/{language}.json", encoding="utf-8") as l: # 读取语言文件
         LangText = l.read()
         lang = json.loads(LangText)
@@ -159,6 +195,8 @@ UpdateProgramUrl = lang["UpdateProgramUrl"]
 csvPathLang = lang["csvPath"]
 LocalListPathLang = lang["LocalListPath"]
 UpdateProgramName = lang["UpdateProgramName"]
+NativePort = lang["NativePort"]
+
 
 # ConServerUrl = config["server"] # 读取服务器配置
 with ui.tabs().classes('w-full') as tabs:
@@ -173,24 +211,28 @@ with ui.tab_panels(tabs, value='home').classes('w-full'):
                 checkUpdateButton = ui.button(text=CheckUpdateButtonLang)
             with ui.column():
                 ui.badge(GlobalSettings, outline=True)
-                LanguageSelect = ui.select(label=LangSelect, options={"auto":"Auto", "zh_CN":"简体中文", "en_US":"English"}, value="auto").style("width: 140px").bind_value(app.storage.general, "language")
-                DefaultLanguageSelect = ui.select(label=DefaultLanguageSelectLang, options={"zh_CN":"简体中文", "en_US":"English"}, value="en_US").style("width: 140px").bind_value(app.storage.general, "default_lang")
+                LanguageSelect = ui.select(label=LangSelect, options=global_lang["lang"], value="auto").style("width: 140px").bind_value(app.storage.general, "language")
+                DefaultLanguageSelect = ui.select(label=DefaultLanguageSelectLang, options=global_lang["default_lang"], value="en_us").style("width: 140px").bind_value(app.storage.general, "default_lang")
                 serverUrl = ui.input(label=ServerUrl, value="https://qn.nya-wsl.cn/").style("width: 140px").bind_value(app.storage.general, "server")
+                portSetting = ui.input(label=NativePort, value=lambda: int(check_port()), placeholder="1-65525").style("width: 140px").bind_value(app.storage.general, "native_port")
+
             with ui.column():
                 ui.badge(ServerSettings, outline=True)
                 csvUrl = ui.input(label=csvUrlLang, value="files/ServerList.csv").bind_value(app.storage.general, "csvUrl")
                 updateCheckUrl = ui.input(label=VersionCheckUrl, value="files/n2n_config.html").bind_value(app.storage.general, "conUrl")
                 zipUrl = ui.input(label=ZipUrlLang, value="files/n2n_update_win.zip").bind_value(app.storage.general, "zipUrl")
                 updateUrl = ui.input(label=UpdateProgramUrl, value="files/update.exe").bind_value(app.storage.general, "updateUrl")
+
             with ui.column():
                 ui.badge(LocalSettings, outline=True)
                 csvPath = ui.input(label=csvPathLang, value="ServerList.csv").bind_value(app.storage.general, "csvPath")
                 localListPath = ui.input(label=LocalListPathLang, value="local_list.csv").bind_value(app.storage.general, "local_list")
                 updateFile = ui.input(label=UpdateProgramName, value="update.exe").bind_value(app.storage.general, "updateFile")
+
     with ui.tab_panel('home'):
         with ui.row().classes("w-full"):
             with ui.card(align_items="center").classes("w-full"):
-                ipInputSwitch = ui.switch("自动分配IP", value=True, on_change=lambda: ShowIpInput())
+                ipInputSwitch = ui.switch(text=ipInputSwitchLang, value=True, on_change=lambda: ShowIpInput())
                 with ui.row():
                     ServerSelect = ui.select(label=ServerSelectLang, options=GetServer()).style("width: 120px").bind_value(app.storage.general, "N2N_Server")
                     groupNameInput = ui.input(label=GroupNameInputLang).bind_value(app.storage.general, "GroupName")
@@ -201,10 +243,8 @@ with ui.tab_panels(tabs, value='home').classes('w-full'):
             with ui.scroll_area().classes('w-full') as area:
                 result = ui.markdown()
 
-port_label = ui.label(native.find_open_port(65001, 65525)).bind_text(app.storage.general, "native_port")
-port_label.set_visibility(False)
 ui.run(
-port=int(port_label.text),
+port=int(check_port()),
 title=f"N2N Client | Nya-WSL v{version}",
 native=True,
 reload=False,

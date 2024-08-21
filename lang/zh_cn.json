@@ -21,5 +21,6 @@
     "UpdateProgramUrl": "更新程序路径",
     "csvPath": "csv文件名",
     "LocalListPath": "本地节点列表",
-    "UpdateProgramName": "更新程序名称"
+    "UpdateProgramName": "更新程序名称",
+    "NativePort": "GUI运行端口"
 } 

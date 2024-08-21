@@ -1,0 +1,14 @@
+{
+    "lang": {
+        "auto": "Auto",
+        "zh_cn": "简体中文",
+        "en_us": "English",
+        "ja_jp": "日本語"
+    },
+    "default_lang": {
+        "auto": "Auto",
+        "zh_cn": "简体中文",
+        "en_us": "English",
+        "ja_jp": "日本語"
+    }
+}
