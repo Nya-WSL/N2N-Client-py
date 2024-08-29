@@ -1,24 +1,80 @@
 import os
-import csv
 import sys
 import json
+import yaml
 import shlex
 import ctypes
 import asyncio
-import datetime
+import aiohttp
+import zipfile
 import requests
-import subprocess
-from urllib import request
 from nicegui import ui, native, app
 
 version = "2.0.0"
 app.storage.general.indent = True
+
 # env_cmd = r"setx NICEGUI_STORAGE_PATH %s /m"%"config"
 # os.system(env_cmd)
 
+def check_update():
+    if os.path.exists("update.bat"):
+        os.remove("update.bat")
+
+    async def download(url, save_path):
+        async def close_session():
+            await session.close()
+            cancelButton.on_click(dialog.close)
+        updateButton.set_enabled(False)
+        percent_dialog.set_text(DownloadStart)
+        if not os.path.exists("cache"):
+            os.mkdir("cache")
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                cancelButton.on_click(lambda: close_session())
+                with open(save_path, 'wb') as f:
+                    while True:
+                        chunk = await response.content.read(1024)
+                        f.write(chunk)
+                        percent_dialog.set_text(DownloadProgress + "%.2f%%" % (f.tell() / response.content_length * 100))
+                        if not chunk:
+                            break
+        # percent_dialog.set_text(DownloadProgress + "100%")
+        # updateButton.delete()
+        # cancelButton.delete()
+        percent_dialog.set_text(DownloadFinish)
+        Unzip = zipfile.ZipFile("cache\\n2n_update_win.zip", mode='r')
+        for names in Unzip.namelist():
+            Unzip.extract(names, os.getcwd())
+        Unzip.close()
+        with open("update.bat", "w") as f:
+            f.write(f"""
+cd /d {os.getcwd()}
+taskkill /f /im N2N-Client-NG.exe
+timeout /t 3 /nobreak
+move /y update\\* ./
+rmdir /s /q update
+rmdir /s /q cache
+N2N-Client-NG.exe
+""")
+        os.system("update.bat")
+        app.shutdown()
+
+    response = requests.get(serverUrl.value + updateCheckUrl.value)
+    if response.text.replace("\n", "") != version:
+        with ui.dialog() as dialog, ui.card():
+            percent_dialog = ui.label(UpdateLabelLang)
+            with ui.row(align_items="center"):
+                updateButton = ui.button('Update', on_click=lambda: download(serverUrl.value + zipUrl.value, "cache\\n2n_update_win.zip"))
+                cancelButton = ui.button('Cancel', on_click=dialog.close)
+        dialog.open()
+    else:
+        ui.notify(UpdateNotNeed, type="info")
+
 def check_port():
+    if not os.path.exists(".nicegui/storage-general.json"):
+        portSetting.set_value("")
     if portSetting.value == "" or int(portSetting.value) < 1 or int(portSetting.value) > 65525:
-        print("Port is error! Will search for available IP!")
+        print("Port is error! Will search for available port!")
         port = native.find_open_port(65001, 65525)
         portSetting.set_value(port)
     else:
@@ -27,7 +83,7 @@ def check_port():
 
 def stop_command():
     process.kill()
-    connButton.set_text("连接")
+    connButton.set_text(connButtonLang)
     connButton.on_click(run_command())
 
 async def run_command() -> None:
@@ -41,19 +97,19 @@ async def run_command() -> None:
     else:
         command = f"{n2n} -c {groupNameInput.value} -a {ipInput.value} -l {ServerSelect.value}"
 
-    if connButton.text == "断开连接":
+    if connButton.text == DisconnButton:
         stop_command()
     else:
         if groupNameInput.value == "" or ServerSelect.value == "null":
             if ipInputSwitch.value == False:
                 if ipInput.value == "":
-                    ui.notify("参数错误！请检查！", type="negative")
+                    ui.notify(ParameterError, type="negative")
             else:
-                ui.notify("参数错误！请检查！", type="negative")
+                ui.notify(ParameterError, type="negative")
         else:
             if ipInputSwitch.value == False:
                 if ipInput.value == "":
-                    ui.notify("参数错误！请检查！", type="negative")
+                    ui.notify(ParameterError, type="negative")
                 else:
                     command = command.replace('python3', sys.executable)  # NOTE replace with machine-independent Python path (#1240)
                     process = await asyncio.create_subprocess_exec(
@@ -72,7 +128,7 @@ async def run_command() -> None:
                             break
                         result.content = f'```\n{output_str}\n+{new}\n```'
                         area.scroll_to(percent=1.0)
-                        connButton.set_text("断开连接")
+                        connButton.set_text(DisconnButton)
             else:
                 command = command.replace('python3', sys.executable)  # NOTE replace with machine-independent Python path (#1240)
                 process = await asyncio.create_subprocess_exec(
@@ -91,11 +147,35 @@ async def run_command() -> None:
                         break
                     result.content = f'```\n{output_str}\n+{new}\n```'
                     area.scroll_to(percent=1.0)
-                    connButton.set_text("断开连接")
+                    connButton.set_text(DisconnButton)
 
-def GetServer():
-    ServerDict = {"125.197.99.92:7777" : "NWC | 东京"}
-    return ServerDict
+def GetLocalServer():
+    if not CheckServerListSwitch.value:
+        try:
+            if not localListSelect.value in localListSelect.options:
+                ui.notify(LocalServerGetError, type="negative")
+            elif localListSelect.value == "json":
+                with open("local_list.json", "r", encoding="utf-8") as f:
+                    ServerSelect.set_options(options=json.load(f))
+            elif localListSelect.value == "yml":
+                with open("local_list.yml", "r", encoding="utf-8") as f:
+                    ServerSelect.set_options(options=yaml.load(f, Loader=yaml.FullLoader))
+        except:
+            ui.notify(LocalServerGetError, type="negative")
+            ServerSelect.set_options([f"{LocalServerGetError}"])
+    else:
+        GetServer(True)
+
+def GetServer(status = False):
+    try:
+        response = requests.get(serverUrl.value + ListUrl.value)
+        if not status:
+            return response.json()
+        else:
+            ServerSelect.set_options(options=response.json())
+    except:
+        ui.notify(ServerGetError, type="negative")
+        ServerSelect.set_options([f"{ServerGetError}"])
 
 def ShowIpInput():
     if ipInputSwitch.value:
@@ -145,6 +225,7 @@ lang = {
     "GroupNameInput": "Group Name",
     "ipInput": "LAN IP",
     "connButton": "connect",
+    "disconnButton": "Disconnect",
     "GlobalSettings": "Global Settings",
     "ServerSettings": "Server Settings",
     "LocalSettings": "Local Settings",
@@ -154,14 +235,24 @@ lang = {
     "AutoUpdate": "Auto Update",
     "CheckServerList": "Get Server List",
     "CheckUpdateButton": "Check Update",
-    "csvUrl": "CSV File Path",
     "VersionCheckUrl": "Version File Path",
     "ZipUrl": "Update File Path",
     "UpdateProgramUrl": "Update Program Path",
-    "csvPath": "CSV File Name",
+    "LocalListFile": "Local server list file type",
     "LocalListPath": "Local Server Path",
     "UpdateProgramName": "Update Program Name",
-    "NativePort": "GUI Run Port"
+    "NativePort": "GUI Run Port",
+    "ParameterError": "Parameter error, please check!",
+    "LocalServerGetError": "Get local server list is error, please check!",
+    "ServerGetError": "Get server list is error, please check!",
+    "UpdateLabel": "The new version is available, do you want to update it?",
+    "CheckUpdateError": "Check update failed!",
+    "UpdateNotNeed": "The current version is already the latest version!",
+    "UpdateError": "Update failed!",
+    "DownloadStart": "Download update started！",
+    "DownloadError": "Download update error！",
+    "DownloadProgress": "Download progress: ",
+    "DownloadFinish": "Download update finished! The update will be installed!"
 }
 
 if not os.path.exists(f"lang/{language}.json"): # 检查语言文件是否存在
@@ -179,6 +270,7 @@ ServerSelectLang = lang["ServerSelect"]
 GroupNameInputLang = lang["GroupNameInput"]
 ipInputLang = lang["ipInput"]
 connButtonLang = lang["connButton"]
+DisconnButton = lang["disconnButton"]
 GlobalSettings = lang["GlobalSettings"]
 ServerSettings = lang["ServerSettings"]
 LocalSettings = lang["LocalSettings"]
@@ -188,17 +280,25 @@ ServerUrl = lang["ServerUrl"]
 AutoUpdate = lang["AutoUpdate"]
 CheckServerList = lang["CheckServerList"]
 CheckUpdateButtonLang = lang["CheckUpdateButton"]
-csvUrlLang = lang["csvUrl"]
+ListPath = lang["ListPath"]
 VersionCheckUrl = lang["VersionCheckUrl"]
 ZipUrlLang = lang["ZipUrl"]
 UpdateProgramUrl = lang["UpdateProgramUrl"]
-csvPathLang = lang["csvPath"]
-LocalListPathLang = lang["LocalListPath"]
+LocalListFile = lang["LocalListFile"]
 UpdateProgramName = lang["UpdateProgramName"]
 NativePort = lang["NativePort"]
+ParameterError = lang["ParameterError"]
+LocalServerGetError = lang["LocalServerGetError"]
+ServerGetError = lang["ServerGetError"]
+UpdateLabelLang = lang["UpdateLabel"]
+CheckUpdateError = lang["CheckUpdateError"]
+UpdateError = lang["UpdateError"]
+DownloadStart = lang["DownloadStart"]
+DownloadError = lang["DownloadError"]
+DownloadProgress = lang["DownloadProgress"]
+DownloadFinish = lang["DownloadFinish"]
+UpdateNotNeed = lang["UpdateNotNeed"]
 
-
-# ConServerUrl = config["server"] # 读取服务器配置
 with ui.tabs().classes('w-full') as tabs:
     ui.tab('home', TabHomeName, icon='home')
     ui.tab('settings', TabSettingsName, icon='settings')
@@ -207,26 +307,25 @@ with ui.tab_panels(tabs, value='home').classes('w-full'):
         with ui.row():
             with ui.column():
                 AutoUpdateSwitch = ui.switch(text=AutoUpdate, value=True).bind_value(app.storage.general, "auto_update")
-                CheckServerListSwitch = ui.switch(text=CheckServerList, value=True).bind_value(app.storage.general, "check_server_list")
-                checkUpdateButton = ui.button(text=CheckUpdateButtonLang)
+                CheckServerListSwitch = ui.switch(text=CheckServerList, value=True, on_change=lambda: GetLocalServer())
+                checkUpdateButton = ui.button(text=CheckUpdateButtonLang, on_click=lambda: check_update())
             with ui.column():
                 ui.badge(GlobalSettings, outline=True)
                 LanguageSelect = ui.select(label=LangSelect, options=global_lang["lang"], value="auto").style("width: 140px").bind_value(app.storage.general, "language")
                 DefaultLanguageSelect = ui.select(label=DefaultLanguageSelectLang, options=global_lang["default_lang"], value="en_us").style("width: 140px").bind_value(app.storage.general, "default_lang")
                 serverUrl = ui.input(label=ServerUrl, value="https://qn.nya-wsl.cn/").style("width: 140px").bind_value(app.storage.general, "server")
                 portSetting = ui.input(label=NativePort, value=lambda: int(check_port()), placeholder="1-65525").style("width: 140px").bind_value(app.storage.general, "native_port")
-
             with ui.column():
                 ui.badge(ServerSettings, outline=True)
-                csvUrl = ui.input(label=csvUrlLang, value="files/ServerList.csv").bind_value(app.storage.general, "csvUrl")
-                updateCheckUrl = ui.input(label=VersionCheckUrl, value="files/n2n_config.html").bind_value(app.storage.general, "conUrl")
-                zipUrl = ui.input(label=ZipUrlLang, value="files/n2n_update_win.zip").bind_value(app.storage.general, "zipUrl")
-                updateUrl = ui.input(label=UpdateProgramUrl, value="files/update.exe").bind_value(app.storage.general, "updateUrl")
+                ListUrl = ui.input(label=ListPath, value="n2n/ServerList.json").bind_value(app.storage.general, "listUrl")
+                updateCheckUrl = ui.input(label=VersionCheckUrl, value="n2n/n2n_config.html").bind_value(app.storage.general, "conUrl")
+                zipUrl = ui.input(label=ZipUrlLang, value="n2n/n2n_update_win.zip").bind_value(app.storage.general, "zipUrl")
+                updateUrl = ui.input(label=UpdateProgramUrl, value="n2n/update.exe").bind_value(app.storage.general, "updateUrl")
 
             with ui.column():
                 ui.badge(LocalSettings, outline=True)
-                csvPath = ui.input(label=csvPathLang, value="ServerList.csv").bind_value(app.storage.general, "csvPath")
-                localListPath = ui.input(label=LocalListPathLang, value="local_list.csv").bind_value(app.storage.general, "local_list")
+                # csvPath = ui.input(label=csvPathLang, value="ServerList.csv").bind_value(app.storage.general, "csvPath")
+                localListSelect = ui.select(label=LocalListFile, options=["json", "yml"]).style("width: 150px").bind_value(app.storage.general, "localListSelect")
                 updateFile = ui.input(label=UpdateProgramName, value="update.exe").bind_value(app.storage.general, "updateFile")
 
     with ui.tab_panel('home'):
@@ -243,6 +342,8 @@ with ui.tab_panels(tabs, value='home').classes('w-full'):
             with ui.scroll_area().classes('w-full') as area:
                 result = ui.markdown()
 
+if AutoUpdateSwitch.value:
+    check_update()
 ui.run(
 port=int(check_port()),
 title=f"N2N Client | Nya-WSL v{version}",

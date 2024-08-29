@@ -127,3 +127,6 @@ test.py
 /.nicegui
 edge.exe
 /N2N-Client-NG
+update.exe
+/cache
+/update
