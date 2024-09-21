@@ -33,5 +33,6 @@
     "DownloadStart": "开始下载更新包！",
     "DownloadError": "下载更新包失败！",
     "DownloadProgress": "下载进度：",
-    "DownloadFinish": "下载更新包完成！即将开始解压！"
+    "DownloadFinish": "下载更新包完成！即将开始解压！",
+    "NotAdmin": "请用管理员权限运行程序！"
 } 

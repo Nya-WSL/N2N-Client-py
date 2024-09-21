@@ -10,7 +10,7 @@ import zipfile
 import requests
 from nicegui import ui, native, app
 
-version = "2.0.0"
+version = "2.0.1"
 app.storage.general.indent = True
 
 # env_cmd = r"setx NICEGUI_STORAGE_PATH %s /m"%"config"
@@ -60,15 +60,21 @@ N2N-Client-NG.exe
         app.shutdown()
 
     response = requests.get(serverUrl.value + updateCheckUrl.value)
-    if response.text.replace("\n", "") != version:
-        with ui.dialog() as dialog, ui.card():
-            percent_dialog = ui.label(UpdateLabelLang)
-            with ui.row(align_items="center"):
-                updateButton = ui.button('Update', on_click=lambda: download(serverUrl.value + zipUrl.value, "cache\\n2n_update_win.zip"))
-                cancelButton = ui.button('Cancel', on_click=dialog.close)
-        dialog.open()
+    if not ctypes.windll.shell32.IsUserAnAdmin(): # 判断是否使用管理员权限执行
+        with ui.dialog() as admin_dialog, ui.card(align_items="center"):
+            ui.label(NotAdmin).classes("text-red")
+            ui.button('OK', on_click=lambda: app.shutdown())
+        admin_dialog.open()
     else:
-        ui.notify(UpdateNotNeed, type="info")
+        if response.text.replace("\n", "") != version:
+            with ui.dialog() as dialog, ui.card():
+                percent_dialog = ui.label(UpdateLabelLang)
+                with ui.row(align_items="center"):
+                    updateButton = ui.button('Update', on_click=lambda: download(serverUrl.value + zipUrl.value, "cache\\n2n_update_win.zip"))
+                    cancelButton = ui.button('Cancel', on_click=dialog.close)
+            dialog.open()
+        else:
+            ui.notify(UpdateNotNeed, type="info")
 
 def check_port():
     if not os.path.exists(".nicegui/storage-general.json"):
@@ -252,7 +258,8 @@ lang = {
     "DownloadStart": "Download update started！",
     "DownloadError": "Download update error！",
     "DownloadProgress": "Download progress: ",
-    "DownloadFinish": "Download update finished! The update will be installed!"
+    "DownloadFinish": "Download update finished! The update will be installed!",
+    "NotAdmin": "Please run as administrator!"
 }
 
 if not os.path.exists(f"lang/{language}.json"): # 检查语言文件是否存在
@@ -298,6 +305,7 @@ DownloadError = lang["DownloadError"]
 DownloadProgress = lang["DownloadProgress"]
 DownloadFinish = lang["DownloadFinish"]
 UpdateNotNeed = lang["UpdateNotNeed"]
+NotAdmin = lang["NotAdmin"]
 
 with ui.tabs().classes('w-full') as tabs:
     ui.tab('home', TabHomeName, icon='home')
@@ -307,7 +315,7 @@ with ui.tab_panels(tabs, value='home').classes('w-full'):
         with ui.row():
             with ui.column():
                 AutoUpdateSwitch = ui.switch(text=AutoUpdate, value=True).bind_value(app.storage.general, "auto_update")
-                CheckServerListSwitch = ui.switch(text=CheckServerList, value=True, on_change=lambda: GetLocalServer())
+                CheckServerListSwitch = ui.switch(text=CheckServerList, value=True, on_change=lambda: GetLocalServer()).bind_value(app.storage.general, "check_server_list")
                 checkUpdateButton = ui.button(text=CheckUpdateButtonLang, on_click=lambda: check_update())
             with ui.column():
                 ui.badge(GlobalSettings, outline=True)
@@ -333,7 +341,7 @@ with ui.tab_panels(tabs, value='home').classes('w-full'):
             with ui.card(align_items="center").classes("w-full"):
                 ipInputSwitch = ui.switch(text=ipInputSwitchLang, value=True, on_change=lambda: ShowIpInput())
                 with ui.row():
-                    ServerSelect = ui.select(label=ServerSelectLang, options=GetServer()).style("width: 120px").bind_value(app.storage.general, "N2N_Server")
+                    ServerSelect = ui.select(label=ServerSelectLang, options=GetServer()).style("width: 200px").bind_value(app.storage.general, "N2N_Server")
                     groupNameInput = ui.input(label=GroupNameInputLang).bind_value(app.storage.general, "GroupName")
                     ipInput = ui.input(ipInputLang).style("width: 120px").bind_value(app.storage.general, "LAN_IP")
                     ipInput.set_enabled(False)
@@ -346,7 +354,7 @@ if AutoUpdateSwitch.value:
     check_update()
 ui.run(
 port=int(check_port()),
-title=f"N2N Client | Nya-WSL v{version}",
+title=f"N2N Client | Nya-WSL | v{version}",
 native=True,
 reload=False,
 window_size=[740, 700]

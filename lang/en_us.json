@@ -33,5 +33,6 @@
     "DownloadStart": "Download update started！",
     "DownloadError": "Download update error！",
     "DownloadProgress": "Download progress: ",
-    "DownloadFinish": "Download update finished! The update will be installed!"
+    "DownloadFinish": "Download update finished! The update will be installed!",
+    "NotAdmin": "Please run as administrator!"
 }
