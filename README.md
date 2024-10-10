@@ -1,6 +1,6 @@
 
 
-![python](https://img.shields.io/badge/Version-1.1.3-cyan) ![python](https://img.shields.io/badge/Python-3.11.0-blue) ![os](https://img.shields.io/badge/OS-Windows_Linux-orange) [![CircleCI](https://dl.circleci.com/status-badge/img/gh/Nya-WSL/N2N-Client-py/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/Nya-WSL/N2N-Client-py/tree/main)
+![python](https://img.shields.io/badge/Version-1.1.4-cyan) ![python](https://img.shields.io/badge/Python-3.11.3-blue) ![os](https://img.shields.io/badge/OS-Windows_Linux-orange) [![CircleCI](https://dl.circleci.com/status-badge/img/gh/Nya-WSL/N2N-Client-py/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/Nya-WSL/N2N-Client-py/tree/main)
 
 ### Linux版请使用root账户运行，目前暂不清楚使用拥有root权限的其他账号运行是否会有bug
 
@@ -11,10 +11,9 @@
 # 目前已知公开情报
 
 * 我们目前并不清楚转发数据包需要占用多少资源，所以如果有大量用户同时使用的情况下，延迟可能会飙升
-* 本项目来源于EasyN2N
-* 项目基于[n2n](https://github.com/ntop/n2n)以及python<s>3.9.5</s>(v1.0.2+ -> <s>3.10.4</s>> | v1.0.6+ -> 3.11.0)和TAP虚拟网卡
-* 因为是公益项目，所以在可以预见的未来，本项目会停止维护，我们不接受任何资金方面的帮助，欢迎有人一起来维护本项目（[GitHub](https://github.com/Nya-WSL/N2N-Client-py)）
-* 因为成本原因，目前节点较少，推荐参考[n2n](https://github.com/ntop/n2n)官方说明自建服务端（todo：取消公益服务器），实测新加坡延迟和大陆差不多（测试环境：Tabletop Simulator）
+* 项目基于[n2n](https://github.com/ntop/n2n)以及python<s>3.9.5</s>(v1.0.2+ -> <s>3.10.4</s>> | v1.0.6+ -> 3.11.0 | v1.1.4+ -> 3.11.3)和TAP虚拟网卡
+* 因为是公益项目，所以在可以预见的未来，本项目会停止维护
+* 因为成本原因，目前节点较少，推荐参考[n2n](https://github.com/ntop/n2n)官方说明自建服务端，实测新加坡延迟和大陆差不多（测试环境：Tabletop Simulator）
 * 已知可用环境：Minecraft（java & bedrock）| Overcooked2 | Tabletop Simulator | ······ | 理论上所有通信方式为p2p的环境都可使用（所有测试环境均未考虑服务器带宽限制以及同时使用人数，仅供参考）
 * N2N原理：在NAT环境较好的情况下点对点打洞，也就是所谓的p2p，在NAT环境较复杂或者根本无法打洞的情况下通过服务器中转数据包，也可以设置强制服务器中转，如有这方面需求请运行edge.exe
 ### 基于上方的原理，客户端之间的延迟算法为：
@@ -23,9 +22,11 @@
 
 # 联系我们
 
-- 提交issues
+- [提交issues](https://github.com/Nya-WSL/issues/issues)
 
-- 抄送邮件：support@nya-wsl.com
+- [support@nya-wsl.com](mailto:support@nya-wsl.com)
+
+- [Nya-WSL服务维护与反馈群](https://jq.qq.com/?_wv=1027&k=tSeB0sdy)
 
 # LICENSE
 

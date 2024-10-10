@@ -1,6 +1,0 @@
-region/name,ip/domain:port
-test,127.0.0.1:7777
-Tokyo,localhost:7777
-中国上海|China-ShangHai,127.0.0.1:7777
-# 中文需使用GB2312编码，建议使用excel编辑避免出现编码错误
-# GB2312 is required for Chinese. It is recommended to use excel to edit to avoid encoding errors.

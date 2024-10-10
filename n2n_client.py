@@ -1,362 +1,374 @@
 import os
-import csv
 import sys
-import time
 import json
 import yaml
+import shlex
 import ctypes
-import datetime
+import asyncio
+import aiohttp
+import zipfile
 import requests
-from urllib import request
+from nicegui import ui, native, app
 
-os.system("") # 修复win10 print颜色bug
+version = "2.0.2"
+app.storage.general.indent = True
 
-# 检测系统类型
-osInfo = sys.platform
-if osInfo == "win32": # 系统类型
-    clsCommand = "cls" # cmd清屏指令
-    n2nEXE = "edge.exe" # windows的n2n二进制文件
-    configFile = "config.local.win.yml" # windows的配置文件
-
-elif osInfo == "linux": # 系统类型
-    clsCommand = "clear" # 终端清屏指令
-    n2nEXE = "./edge" # linux的n2n二进制文件
-    configFile = "config.local.linux.yml"# linux的配置文件
-
-# 读取本地配置
-
-# c = open('config.local.win.json','r')
-# text = c.read()
-# c.close()
-# config = json.loads(text)
-
-with open(configFile, encoding='utf-8') as f: # 读取主配置文件
-    config = yaml.load(f, Loader=yaml.FullLoader) # 转为字典
-
-CheckServerList = config["check_server_list"]
-AutoUpdate = config["auto_update"]
-
-workDir = os.getcwd() + "\\logs"
-if not os.path.exists("logs"):
-    os.mkdir(workDir)
-# 错误处理
-class Mylogpetion():
-    def __init__(self):
-        import traceback
-        import logging
-# logging的基本配置
-        errorTime = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')  # 获取错误时间
-        logging.basicConfig(
-            filename=f'{workDir}\\debug_{errorTime}.txt',              # 当前文件写入位置
-            format='%(asctime)s %(levelname)s \n %(message)s',             # 格式化存储的日志格式
-            level=logging.DEBUG,
-            datefmt='%Y-%m-%d %H:%M:%S'
-        )
-# 写入日志
-        logging.debug(traceback.format_exc())
-
-# logging.basicConfig(filename=LogFile,level=logging.DEBUG,format="%(asctime)s - %(pathname)s - %(message)s",datefmt="%Y/\
-# %m/%d %H:%M:%S") # log配置
-
-try:
-    language = config["language"] #读取语言文件的字典
-    if language == "auto":
-        dll_h = ctypes.windll.kernel32
-        SysLang = hex(dll_h.GetSystemDefaultUILanguage())
-        if SysLang == "0x804":
-            language = "zh_cn"
-        elif SysLang == "0x409":
-            language = "en_us"
+def check_permission():
+    admin_permission = False
+    if not ctypes.windll.shell32.IsUserAnAdmin(): # 判断是否使用管理员权限执行
+        with ui.dialog() as admin_dialog, ui.card(align_items="center"):
+            ui.label(NotAdmin).classes("text-red")
+            with ui.row():
+                ui.button('ok', on_click=lambda: admin_dialog.close())
+                ui.button('quit', on_click=lambda: app.shutdown())
+        if not global_lang["dev_mode"]:
+            admin_dialog.open()
         else:
-            language = config["default_lang"]
+            admin_permission = True
     else:
-        language = config["language"]
-    if not os.path.exists(f"lang/{language}.json"):
-        input(f"""
-未发现语言文件'{language}.json'，如果确定配置没问题请重新安装程式！
-The language file '{language}.json' is not found. If the configuration is right, please reinstall the program!""")
-        sys.exit(f"missing language file '{language}.json' or config is error") # 带参退出并写入log
-except:
-    Mylogpetion()
+        admin_permission = True
+    return admin_permission
 
-# 读取语言配置
-l = open(f'lang/{language}.json', 'r', encoding="utf-8") # 将语言文件写入缓存
-LangText = l.read() # 读取语言
-l.close() # 关闭语言文件
-lang = json.loads(LangText) # 将语言写入字典
+def check_update():
+    if os.path.exists("update.bat"):
+        os.remove("update.bat")
 
-# 指定语言所对应的变量
-StartText = lang["StartText"]
-AssignTextAuto = lang["AssignTextAuto"]
-AssignTextManual = lang["AssignTextManual"]
-CheckVersion = lang["CheckVersion"]
-LocalVersion = lang["LocalVersion"]
-ServerVersion = lang["ServerVersion"]
-UpdateText = lang["UpdateText"]
-LatestVersion = lang["LatestVersion"]
-HistoryChoose = lang["HistoryChoose"]
-HistoryChoose1 = lang["HistoryChoose1"]
-HistoryChoose2 = lang["HistoryChoose2"]
-HistoryChoose3 = lang["HistoryChoose3"]
-SecondCheck = lang["SecondCheck"]
-SearchServer = lang["SearchServer"]
-InputGroupName = lang["InputGroupName"]
-ServerNumber = lang["ServerNumber"]
-ServerName = lang["ServerName"]
-ServerIP = lang["ServerIP"]
-AssignText = lang["AssignText"]
-ConfirmText = lang["ConfirmText"]
-AutoUpdateText = lang["AutoUpdateText"]
-AutoUpdateConfigError = lang["AutoUpdateConfigError"]
-CheckServerListError = lang["CheckServerListError"]
+    async def download(url, save_path):
+        async def close_session():
+            await session.close()
+            cancelButton.on_click(dialog.close)
+        updateButton.set_enabled(False)
+        percent_dialog.set_text(DownloadStart)
+        if not os.path.exists("cache"):
+            os.mkdir("cache")
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                cancelButton.on_click(lambda: close_session())
+                with open(save_path, 'wb') as f:
+                    while True:
+                        chunk = await response.content.read(1024)
+                        f.write(chunk)
+                        percent_dialog.set_text(DownloadProgress + "%.2f%%" % (f.tell() / response.content_length * 100))
+                        if not chunk:
+                            break
+        # percent_dialog.set_text(DownloadProgress + "100%")
+        # updateButton.delete()
+        # cancelButton.delete()
+        percent_dialog.set_text(DownloadFinish)
+        Unzip = zipfile.ZipFile("cache\\n2n_update_win.zip", mode='r')
+        for names in Unzip.namelist():
+            Unzip.extract(names, os.getcwd())
+        Unzip.close()
+        with open("update.bat", "w") as f:
+            f.write(f"""
+cd /d {os.getcwd()}
+taskkill /f /im N2N-Client-NG.exe
+timeout /t 3 /nobreak
+move /y update\\* ./
+rmdir /s /q update
+rmdir /s /q cache
+N2N-Client-NG.exe
+""")
+        os.system("update.bat")
+        app.shutdown()
 
-ConServerUrl = config["server"] # 读取服务器配置
+    response = requests.get(serverUrl.value + updateCheckUrl.value)
 
-# 服务器列表获取url和临时保存路径
-CsvUrl = ConServerUrl + config["Url"]["csvUrl"]
-CsvRes = os.getcwd() + config["Path"]["csvRes"]
-CsvFile = config["Path"]["csvFile"]
+    if response.text.replace("\n", "") != version:
+        with ui.dialog() as dialog, ui.card():
+            percent_dialog = ui.label(UpdateLabelLang)
+            with ui.row(align_items="center"):
+                updateButton = ui.button('Update', on_click=lambda: download(serverUrl.value + zipUrl.value, "cache\\n2n_update_win.zip"))
+                cancelButton = ui.button('Cancel', on_click=dialog.close)
+        dialog.open()
+    else:
+        ui.notify(UpdateNotNeed, type="info")
 
-ConUrl = ConServerUrl + config["Url"]["conUrl"]# 服务器配置文件
+def check_port():
+    if not os.path.exists(".nicegui/storage-general.json"):
+        portSetting.set_value("")
+    if portSetting.value == "" or int(portSetting.value) < 1 or int(portSetting.value) > 65525:
+        print("Port is error! Will search for available port!")
+        port = native.find_open_port(65001, 65525)
+        portSetting.set_value(port)
+    else:
+        port = portSetting.value
+    return int(port)
 
-ZipUrl = ConServerUrl + config["Url"]["zipUrl"] # 获取更新包url
-UpdateUrl = ConServerUrl + config["Url"]["updateUrl"] # 获取更新模块url
-UpdateRes = config["Path"]["updateRes"] # 更新模块保存路径
+def stop_command():
+    process.kill()
+    connButton.set_text(connButtonLang)
+    connButton.on_click(run_command())
 
-HistoryUrl = ConServerUrl + config["Url"]["historyUrl"] # 获取默认历史记录url
-HistoryRes = config["Path"]["historyRes"] # 历史记录保存位置
+async def run_command() -> None:
+    global process
 
-# 当历史记录不存在时下载默认历史记录
-if not os.path.exists("history.json"):
-    request.urlretrieve(HistoryUrl,HistoryRes)
+    command = ""
+    result.content = ""
 
-# 读取历史记录
-h = open('history.json','r') # 将历史记录写入缓存
-text1 = h.read() # 读取历史记录
-h.close() # 关闭文件
-history = json.loads(text1) # 将历史记录写入字典
+    if not check_permission():
+        return
 
-HistoryServer = history["server"] # 历史服务器IP
-GroupName = history["groupname"] # 历史组名称
-HistoryAssign = history["dist"] # 历史IP分配方式
+    if ipInputSwitch.value:
+        command = f"{n2n} -c {groupNameInput.value} -l {ServerSelect.value}"
+    else:
+        command = f"{n2n} -c {groupNameInput.value} -a {ipInput.value} -l {ServerSelect.value}"
 
-# 获取并定义history.json中dist的值为i18n的值
-if HistoryAssign == "auto":
-    AssignText = AssignTextAuto
-elif HistoryAssign == "manual":
-    AssignText = AssignTextManual
-
-# 将所选择的连接方式写进history.json
-def SaveHistory():
-    if Assign == 1:
-        AssignJson = "auto"
-    if Assign == 2:
-        AssignJson = "manual"
-    history["server"] = Server
-    history["groupname"] = Gname
-    history["dist"] = AssignJson
-    with open("history.json",'w',encoding='utf-8') as f:
-        json.dump(history, f,ensure_ascii=False)
-
-# 获取服务器版本信息
-try:
-    print(f"\n\033[5;31;40m{StartText}\033[0m\n")
-    print("")
-    print(f"\n\033[5;36;40m{CheckVersion}\033[0m\n")
-    ServerVer = requests.get(ConUrl).text # 从资源文件服务器获取版本号
-    
-except:
-    Mylogpetion()
-
-LocalVer = config["version"] # 获取本地版本
-frontSpace = (50-len(LocalVer))*" " # 计算空格数量
-
-# 打屏
-print(f'''
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃                     N2N_Client                     ┃
-┃{frontSpace}{LocalVer}  ┃
-┠────────────────────────────────────────────────────┨
-┃                A Project of Nya-WSL.               ┃ 
-┃ For more information,please visit: www.nya-wsl.com ┃
-┃    Copyright 2021-2023. All rights reserved.       ┃
-┠────────────────────────────────────────────────────┨
-┃     Takahashiharuki & SHDocter      2023/01/21     ┃
-┠────────────────────────────────────────────────────┨
-┃              Happy Chinese New Year~~~             ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-''')
-
-time.sleep(3.5)
-os.system(clsCommand) # 清屏
-
-try:
-# 打印版本
-    print(f'''──────────────────────────────────────────────────────
-    {LocalVersion}：{LocalVer}   {ServerVersion}：{ServerVer}
-──────────────────────────────────────────────────────''') 
-    time.sleep(3)
-
-# 版本更新
-    if LocalVer != ServerVer:
-        
-        if AutoUpdate == True:
-            def report(blocknum, blocksize, totalsize):
-                readsofar = blocknum * blocksize
-                if totalsize > 0:
-                    percent = readsofar * 1e2 / totalsize
-                    s = "\r%5.1f%% %*d / %d" % (percent, len(str(totalsize)), readsofar, totalsize)
-                    sys.stderr.write(s)
-                    if readsofar >= totalsize:
-                        sys.stderr.write("\n")
-                else:
-                    sys.stderr.write("read %d\n" % (readsofar,))
-
-            print(f"\n\033[5;36;40m{UpdateText}\033[0m\n")
-
-            if osInfo == "win32": # 系统类型
-                request.urlretrieve(UpdateUrl,UpdateRes) # 下载更新模块
-                os.system('update.exe')# 执行更新
-
-            elif osInfo == "linux": # 系统类型
-                request.urlretrieve(ZipUrl,"n2n_update_linux.zip",report) # 下载更新包
-                request.urlretrieve(UpdateUrl,UpdateRes) # 下载更新脚本
-                os.system("sudo chmod -R 777 *")
-                os.system(UpdateRes)
-
-        elif AutoUpdate == False:
-            print(f"{AutoUpdateText}")
-            time.sleep(5)
+    if connButton.text == DisconnButton:
+        stop_command()
+    else:
+        if groupNameInput.value == "" or ServerSelect.value == "null":
+            if ipInputSwitch.value == False:
+                if ipInput.value == "":
+                    ui.notify(ParameterError, type="negative")
+            else:
+                ui.notify(ParameterError, type="negative")
         else:
-            input(f"{AutoUpdateConfigError}")
-            sys.exit(f"{AutoUpdateConfigError} | error value:auto_update is {AutoUpdate}")
-except:
-    Mylogpetion()
-    sys.exit("") # 防止python捕捉到抛出的error后继续执行程序，手动退出
-    
-try:
-    if LocalVer == ServerVer:
-        os.system(clsCommand) # 清屏
-        print(f'\n\033[5;36;40m{LatestVersion}\033[0m')
-        hist = input(f"{HistoryChoose}{HistoryServer}{HistoryChoose1}{GroupName}{HistoryChoose2}{AssignText}{HistoryChoose3}") # 确认读取历史记录的echo
-        if hist == "" or hist ==  "y" or hist == "Y": # 上方hist的值为:空/y/Y
-            os.system(clsCommand) # 清屏
-            Assign = HistoryAssign # 定义分配方式为历史记录
-            if Assign == "manual": # 判断分配方式是否为手动
-                address = input(lang["IP"]) # 手动输入IP段
-                input(f'''
-IP:\033[5;36;40m{address}\033[0m\n
-{SecondCheck}''') # 二次确认
-                if osInfo == "win32":
-                    n2nManual = f"{n2nEXE} -c {GroupName} -a {address} -l {HistoryServer}" # 定义n2n的参数
-                    n2nAuto = f"{n2nEXE} -c {GroupName} -l {HistoryServer}"
-                elif osInfo == "linux":
-                    n2nManual = f"{n2nEXE} -c {GroupName} -a {address} -f -l {HistoryServer}" # 定义n2n的参数
-                    n2nAuto = f"{n2nEXE} -c {GroupName} -f -l {HistoryServer}"
-                os.system(n2nManual)# 运行n2n的边缘节点并跟参
-            if Assign == "auto": # 判断分配方式是否为自动
-                if osInfo == "win32":
-                    n2nAuto = f"{n2nEXE} -c {GroupName} -l {HistoryServer}"
-                elif osInfo == "linux":
-                    n2nAuto = f"{n2nEXE} -c {GroupName} -f -l {HistoryServer}"
-                os.system(n2nAuto)# 运行n2n的边缘节点并跟参
-            # 如果历史记录里的分配方式为错误的值将按照自动分配的方式运行
+            if ipInputSwitch.value == False:
+                if ipInput.value == "":
+                    ui.notify(ParameterError, type="negative")
+                else:
+                    command = command.replace('python3', sys.executable)  # NOTE replace with machine-independent Python path (#1240)
+                    process = await asyncio.create_subprocess_exec(
+                        *shlex.split(command, posix='win' not in sys.platform.lower()),
+                        stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT,
+                        cwd=os.path.dirname(os.path.abspath(__file__))
+                    )
+                    # NOTE we need to read the output in chunks, otherwise the process will block
+                    output = []
+                    while True:
+                        new = await process.stdout.readline()
+                        output.append(f"{new}")
+                        output_str = str(output).replace("\\n", "\n").replace("[\"b\'", "").replace("\r\n", "\n").replace("\\r\\", "").replace("\"]", "").replace("""\
+'", "b'""", "").replace("\''\, \"b'", "")
+                        if not new:
+                            break
+                        result.content = f'```\n{output_str}\n+{new}\n```'
+                        area.scroll_to(percent=1.0)
+                        connButton.set_text(DisconnButton)
             else:
-                print(lang["AssignError"]) # 输出error
-                time.sleep(2)
-                if osInfo == "win32":
-                    n2nAuto = f"{n2nEXE} -c {GroupName} -l {HistoryServer}"
-                elif osInfo == "linux":
-                    n2nAuto = f"{n2nEXE} -c {GroupName} -f -l {HistoryServer}"
-                os.system(n2nAuto)# 运行n2n的边缘节点并跟参
-            
-        elif hist == "n" or hist == "N": # 上方hist的值为:n/N
-            print(f'\n\033[5;36;40m{SearchServer}\033[0m') # 输出echo
-            request.urlretrieve(CsvUrl,CsvRes) # 下载可用服务器列表
-            if CheckServerList == "offline":
-                LocalList = config["Path"]["local_list"]
-                if not os.path.exists(LocalList):
-                    LocalList = CsvFile
-                    print(f"{CheckServerListError}")
-                    time.sleep(5)
-            if CheckServerList == "online":
-                LocalList = CsvFile
-            print(lang["SearchSuccess"]) # 输出echo
-            time.sleep(3)
-            os.system(clsCommand) # 清屏
+                command = command.replace('python3', sys.executable)  # NOTE replace with machine-independent Python path (#1240)
+                process = await asyncio.create_subprocess_exec(
+                    *shlex.split(command, posix='win' not in sys.platform.lower()),
+                    stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT,
+                    cwd=os.path.dirname(os.path.abspath(__file__))
+                )
+                # NOTE we need to read the output in chunks, otherwise the process will block
+                output = []
+                while True:
+                    new = await process.stdout.readline()
+                    output.append(f"{new}")
+                    output_str = str(output).replace("\\n", "\n").replace("[\"b\'", "").replace("\r\n", "\n").replace("\\r\\", "").replace("\"]", "").replace("""\
+'", "b'""", "").replace("\''\, \"b'", "")
+                    if not new:
+                        break
+                    result.content = f'```\n{output_str}\n+{new}\n```'
+                    area.scroll_to(percent=1.0)
+                    connButton.set_text(DisconnButton)
 
-            # 提示用户手动输入组名称
-            Gname = input(f'''──────────────────────────────────────────────────────
-{InputGroupName}''')
-            print('──────────────────────────────────────────────────────')
+def GetLocalServer():
+    if not CheckServerListSwitch.value:
+        try:
+            if not localListSelect.value in localListSelect.options:
+                ui.notify(LocalServerGetError, type="negative")
+            elif localListSelect.value == "json":
+                with open("local_list.json", "r", encoding="utf-8") as f:
+                    ServerSelect.set_options(options=json.load(f))
+            elif localListSelect.value == "yml":
+                with open("local_list.yml", "r", encoding="utf-8") as f:
+                    ServerSelect.set_options(options=yaml.load(f, Loader=yaml.FullLoader))
+        except:
+            ui.notify(LocalServerGetError, type="negative")
+            ServerSelect.set_options([f"{LocalServerGetError}"])
+    else:
+        GetServer(True)
 
-            # 读取服务器列表
-            
-            with open(rf'{LocalList}',encoding='GB2312',errors='ignore') as csvfile:
-                reader = csv.reader(csvfile)
-                place = [row[0] for row in reader] # 服务器所在地域
+def GetServer(status = False):
+    try:
+        response = requests.get(serverUrl.value + ListUrl.value)
+        if not status:
+            return response.json()
+        else:
+            ServerSelect.set_options(options=response.json())
+    except:
+        ui.notify(ServerGetError, type="negative")
+        ServerSelect.set_options([f"{ServerGetError}"])
 
-            with open(rf'{LocalList}',encoding='GB2312',errors='ignore') as csvfile:
-                reader = csv.reader(csvfile)
-                address = [row[1] for row in reader] # 服务器IP
+def ShowIpInput():
+    if ipInputSwitch.value:
+        ipInput.set_enabled(False)
+    else:
+        ipInput.set_enabled(True)
 
-                os.system(clsCommand) # 清屏
-                print(lang["ServerList"])
-                print('──────────────────────────────────────────────────────')
-                for i in place:
-                    print(f"{ServerNumber}%s {ServerName}%s" % (place.index(i) + 1, i))# 根据csv文件所写的地域输出格式化列表
-                print('──────────────────────────────────────────────────────')
-                number = int(input(lang["ServerText"])) # 用户所选择的服务器
-                if number > len(place) or number < 1: # 判断输入值是否超出范围
-                    # 抛出错误写入log并退出
-                    input(lang["ParameterError"])
-                    sys.exit("input error")
-                # 将用户所选择的服务器序号和csv中的服务器IP对应
-                Server = address[number-1]
-                print (f'''
-{ServerIP}\033[5;36;40m{Server}\033[0m\n''')
-                time.sleep(2)
-                os.system(clsCommand)
-            # 输出分配方式让用户手动选择
-            Assign = int(input(f'''
-──────────────────────────────────────────────────────
-{AssignText}
+n2n = ""
+language = ""
+osInfo = sys.platform
 
-1.{AssignTextAuto}
-2.{AssignTextManual}
+if osInfo == "win32": # 系统类型
+    n2n = "edge.exe" # windows的n2n二进制文件
+elif osInfo == "linux": # 系统类型
+    n2n = "./edge" # linux的n2n二进制文件
 
-──────────────────────────────────────────────────────
+with open("lang/global.json", "r", encoding="utf-8") as f:
+    global_lang = json.load(f)
 
-{ConfirmText}'''))
+if os.path.exists(".nicegui/storage-general.json"):
+    language = app.storage.general["language"] #读取语言文件的字典
+else:
+    language = "auto"
 
-            time.sleep(1)
-            os.system(clsCommand)
+if language == "auto":
+    # dll_h = ctypes.windll.kernel32
+    SysLang = hex(ctypes.windll.kernel32.GetSystemDefaultUILanguage())
+    if SysLang == "0x804":
+        language = "zh_cn"
+    elif SysLang == "0x409":
+        language = "en_us"
+    elif SysLang == "0x411":
+        language = "ja_jp"
+    else:
+        if os.path.exists(".nicegui/storage-general.json"):
+            language = app.storage.general["default_lang"]
+        else:
+            language = "en_us"
+else:
+    language = app.storage.general["language"]
 
-            if Assign == 2: # 手动分配
-                SaveHistory()
-                address = input(lang["IP"])
-                input(f'''
-IP:\033[5;36;40m{address}\033[0m\n
-{SecondCheck}''')
-                if osInfo == "win32":
-                    n2nManual = f"{n2nEXE} -c {Gname} -a {address} -l {Server}" # 定义n2n的参数
-                    n2nAuto = f"{n2nEXE} -c {Gname} -l {Server}"
-                elif osInfo == "linux":
-                    n2nManual = f"{n2nEXE} -c {Gname} -a {address} -f -l {Server}" # 定义n2n的参数
-                    n2nAuto = f"{n2nEXE} -c {Gname} -f -l {Server}"
-                os.system(n2nManual)
-            if Assign == 1: # 自动分配
-                SaveHistory()
-                if osInfo == "win32":
-                    n2nAuto = f"{n2nEXE} -c {Gname} -l {Server}"
-                elif osInfo == "linux":
-                    n2nAuto = f"{n2nEXE} -c {Gname} -f -l {Server}"
-                os.system(n2nAuto)
-            else:
-                input(lang["ParameterError"])
-        else: # 上方hist的值出现错误
-            input(lang["ParameterError"])
-            sys.exit("history choose is error") # 抛出错误写入log并退出
-            
-except:
-    Mylogpetion()
+lang = {
+    "TabHomeName": "Home",
+    "TabSettingsName": "Settings",
+    "ipInputSwitch": "Auto Assign IP",
+    "ServerSelect": "Select Server",
+    "GroupNameInput": "Group Name",
+    "ipInput": "LAN IP",
+    "connButton": "connect",
+    "disconnButton": "Disconnect",
+    "GlobalSettings": "Global Settings",
+    "ServerSettings": "Server Settings",
+    "LocalSettings": "Local Settings",
+    "LangSelect": "Language",
+    "DefaultLanguageSelect": "Default Language",
+    "ServerUrl": "Asset Server",
+    "AutoUpdate": "Auto Update",
+    "CheckServerList": "Get Server List",
+    "CheckUpdateButton": "Check Update",
+    "VersionCheckUrl": "Version File Path",
+    "ZipUrl": "Update File Path",
+    "UpdateProgramUrl": "Update Program Path",
+    "LocalListFile": "Local server list file type",
+    "LocalListPath": "Local Server Path",
+    "UpdateProgramName": "Update Program Name",
+    "NativePort": "GUI Run Port",
+    "ParameterError": "Parameter error, please check!",
+    "LocalServerGetError": "Get local server list is error, please check!",
+    "ServerGetError": "Get server list is error, please check!",
+    "UpdateLabel": "The new version is available, do you want to update it?",
+    "CheckUpdateError": "Check update failed!",
+    "UpdateNotNeed": "The current version is already the latest version!",
+    "UpdateError": "Update failed!",
+    "DownloadStart": "Download update started！",
+    "DownloadError": "Download update error！",
+    "DownloadProgress": "Download progress: ",
+    "DownloadFinish": "Download update finished! The update will be installed!",
+    "NotAdmin": "Please run as administrator!"
+}
+
+if not os.path.exists(f"lang/{language}.json"): # 检查语言文件是否存在
+    ui.notify(f"{language}.json is not exists!", type="error")
+    print(f"{language}.json is not exists!")
+else:
+    with open(f"lang/{language}.json", encoding="utf-8") as l: # 读取语言文件
+        LangText = l.read()
+        lang = json.loads(LangText)
+
+TabHomeName = lang["TabHomeName"]
+TabSettingsName = lang["TabSettingsName"]
+ipInputSwitchLang = lang["ipInputSwitch"]
+ServerSelectLang = lang["ServerSelect"]
+GroupNameInputLang = lang["GroupNameInput"]
+ipInputLang = lang["ipInput"]
+connButtonLang = lang["connButton"]
+DisconnButton = lang["disconnButton"]
+GlobalSettings = lang["GlobalSettings"]
+ServerSettings = lang["ServerSettings"]
+LocalSettings = lang["LocalSettings"]
+LangSelect = lang["LangSelect"]
+DefaultLanguageSelectLang = lang["DefaultLanguageSelect"]
+ServerUrl = lang["ServerUrl"]
+AutoUpdate = lang["AutoUpdate"]
+CheckServerList = lang["CheckServerList"]
+CheckUpdateButtonLang = lang["CheckUpdateButton"]
+ListPath = lang["ListPath"]
+VersionCheckUrl = lang["VersionCheckUrl"]
+ZipUrlLang = lang["ZipUrl"]
+UpdateProgramUrl = lang["UpdateProgramUrl"]
+LocalListFile = lang["LocalListFile"]
+UpdateProgramName = lang["UpdateProgramName"]
+NativePort = lang["NativePort"]
+ParameterError = lang["ParameterError"]
+LocalServerGetError = lang["LocalServerGetError"]
+ServerGetError = lang["ServerGetError"]
+UpdateLabelLang = lang["UpdateLabel"]
+CheckUpdateError = lang["CheckUpdateError"]
+UpdateError = lang["UpdateError"]
+DownloadStart = lang["DownloadStart"]
+DownloadError = lang["DownloadError"]
+DownloadProgress = lang["DownloadProgress"]
+DownloadFinish = lang["DownloadFinish"]
+UpdateNotNeed = lang["UpdateNotNeed"]
+NotAdmin = lang["NotAdmin"]
+
+check_permission()
+
+with ui.tabs().classes('w-full') as tabs:
+    ui.tab('home', TabHomeName, icon='home')
+    ui.tab('settings', TabSettingsName, icon='settings')
+with ui.tab_panels(tabs, value='home').classes('w-full'):
+    with ui.tab_panel('settings'):
+        with ui.row():
+            with ui.column():
+                AutoUpdateSwitch = ui.switch(text=AutoUpdate, value=True).bind_value(app.storage.general, "auto_update")
+                CheckServerListSwitch = ui.switch(text=CheckServerList, value=True, on_change=lambda: GetLocalServer()).bind_value(app.storage.general, "check_server_list")
+                checkUpdateButton = ui.button(text=CheckUpdateButtonLang, on_click=lambda: check_update())
+            with ui.column():
+                ui.badge(GlobalSettings, outline=True)
+                LanguageSelect = ui.select(label=LangSelect, options=global_lang["lang"], value="auto").style("width: 140px").bind_value(app.storage.general, "language")
+                DefaultLanguageSelect = ui.select(label=DefaultLanguageSelectLang, options=global_lang["default_lang"], value="en_us").style("width: 140px").bind_value(app.storage.general, "default_lang")
+                serverUrl = ui.input(label=ServerUrl, value="https://qn.nya-wsl.cn/").style("width: 140px").bind_value(app.storage.general, "server")
+                portSetting = ui.input(label=NativePort, value=lambda: int(check_port()), placeholder="1-65525").style("width: 140px").bind_value(app.storage.general, "native_port")
+            with ui.column():
+                ui.badge(ServerSettings, outline=True)
+                ListUrl = ui.input(label=ListPath, value="n2n/ServerList.json").bind_value(app.storage.general, "listUrl")
+                updateCheckUrl = ui.input(label=VersionCheckUrl, value="n2n/n2n_config.html").bind_value(app.storage.general, "conUrl")
+                zipUrl = ui.input(label=ZipUrlLang, value="n2n/n2n_update_win.zip").bind_value(app.storage.general, "zipUrl")
+                updateUrl = ui.input(label=UpdateProgramUrl, value="n2n/update.exe").bind_value(app.storage.general, "updateUrl")
+
+            with ui.column():
+                ui.badge(LocalSettings, outline=True)
+                # csvPath = ui.input(label=csvPathLang, value="ServerList.csv").bind_value(app.storage.general, "csvPath")
+                localListSelect = ui.select(label=LocalListFile, options=["json", "yml"]).style("width: 150px").bind_value(app.storage.general, "localListSelect")
+                updateFile = ui.input(label=UpdateProgramName, value="update.exe").bind_value(app.storage.general, "updateFile")
+
+    with ui.tab_panel('home'):
+        with ui.row().classes("w-full"):
+            with ui.card(align_items="center").classes("w-full"):
+                ipInputSwitch = ui.switch(text=ipInputSwitchLang, value=True, on_change=lambda: ShowIpInput())
+                with ui.row():
+                    ServerSelect = ui.select(label=ServerSelectLang, options=GetServer()).style("width: 200px").bind_value(app.storage.general, "N2N_Server")
+                    groupNameInput = ui.input(label=GroupNameInputLang).bind_value(app.storage.general, "GroupName")
+                    ipInput = ui.input(ipInputLang).style("width: 120px").bind_value(app.storage.general, "LAN_IP")
+                    ipInput.set_enabled(False)
+                connButton = ui.button(connButtonLang, on_click=lambda: run_command())
+        with ui.card().classes('w-full'):
+            with ui.scroll_area().classes('w-full') as area:
+                result = ui.markdown()
+
+if AutoUpdateSwitch.value:
+    check_update()
+ui.run(
+port=int(check_port()),
+title=f"N2N Client | Nya-WSL | v{version}",
+native=True,
+reload=False,
+window_size=[740, 700]
+)
