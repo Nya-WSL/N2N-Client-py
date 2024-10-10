@@ -346,8 +346,8 @@ with ui.tab_panels(tabs, value='home').classes('w-full'):
             with ui.column():
                 ui.badge(LocalSettings, outline=True)
                 # csvPath = ui.input(label=csvPathLang, value="ServerList.csv").bind_value(app.storage.general, "csvPath")
-                localListSelect = ui.select(label=LocalListFile, options=["json", "yml"]).style("width: 150px").bind_value(app.storage.general, "localListSelect")
-                updateFile = ui.input(label=UpdateProgramName, value="update.exe").bind_value(app.storage.general, "updateFile")
+                localListSelect = ui.select(label=LocalListFile, options=["json", "yml"]).style("width: 160px").bind_value(app.storage.general, "localListSelect")
+                updateFile = ui.input(label=UpdateProgramName, value="update.exe").style("width: 160px").bind_value(app.storage.general, "updateFile")
 
     with ui.tab_panel('home'):
         with ui.row().classes("w-full"):
