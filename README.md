@@ -8,6 +8,12 @@
 
 `python build.py --name Project_Name --icon icon.ico --windowed n2n_client.py`
 
+## Images
+
+![1728596129256](https://github.com/user-attachments/assets/42c8b878-c32c-4d25-b938-4d4fdde0485c)
+
+![1728596129261](https://github.com/user-attachments/assets/8ed0e5da-0113-4ae6-a945-931568da21dd)
+
 # 目前已知公开情报
 
 * 我们目前并不清楚转发数据包需要占用多少资源，所以如果有大量用户同时使用的情况下，延迟可能会飙升
