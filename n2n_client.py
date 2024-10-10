@@ -10,11 +10,24 @@ import zipfile
 import requests
 from nicegui import ui, native, app
 
-version = "2.0.1"
+version = "2.0.2"
 app.storage.general.indent = True
 
-# env_cmd = r"setx NICEGUI_STORAGE_PATH %s /m"%"config"
-# os.system(env_cmd)
+def check_permission():
+    admin_permission = False
+    if not ctypes.windll.shell32.IsUserAnAdmin(): # 判断是否使用管理员权限执行
+        with ui.dialog() as admin_dialog, ui.card(align_items="center"):
+            ui.label(NotAdmin).classes("text-red")
+            with ui.row():
+                ui.button('ok', on_click=lambda: admin_dialog.close())
+                ui.button('quit', on_click=lambda: app.shutdown())
+        if not global_lang["dev_mode"]:
+            admin_dialog.open()
+        else:
+            admin_permission = True
+    else:
+        admin_permission = True
+    return admin_permission
 
 def check_update():
     if os.path.exists("update.bat"):
@@ -60,21 +73,16 @@ N2N-Client-NG.exe
         app.shutdown()
 
     response = requests.get(serverUrl.value + updateCheckUrl.value)
-    if not ctypes.windll.shell32.IsUserAnAdmin(): # 判断是否使用管理员权限执行
-        with ui.dialog() as admin_dialog, ui.card(align_items="center"):
-            ui.label(NotAdmin).classes("text-red")
-            ui.button('OK', on_click=lambda: app.shutdown())
-        admin_dialog.open()
+
+    if response.text.replace("\n", "") != version:
+        with ui.dialog() as dialog, ui.card():
+            percent_dialog = ui.label(UpdateLabelLang)
+            with ui.row(align_items="center"):
+                updateButton = ui.button('Update', on_click=lambda: download(serverUrl.value + zipUrl.value, "cache\\n2n_update_win.zip"))
+                cancelButton = ui.button('Cancel', on_click=dialog.close)
+        dialog.open()
     else:
-        if response.text.replace("\n", "") != version:
-            with ui.dialog() as dialog, ui.card():
-                percent_dialog = ui.label(UpdateLabelLang)
-                with ui.row(align_items="center"):
-                    updateButton = ui.button('Update', on_click=lambda: download(serverUrl.value + zipUrl.value, "cache\\n2n_update_win.zip"))
-                    cancelButton = ui.button('Cancel', on_click=dialog.close)
-            dialog.open()
-        else:
-            ui.notify(UpdateNotNeed, type="info")
+        ui.notify(UpdateNotNeed, type="info")
 
 def check_port():
     if not os.path.exists(".nicegui/storage-general.json"):
@@ -97,6 +105,9 @@ async def run_command() -> None:
 
     command = ""
     result.content = ""
+
+    if not check_permission():
+        return
 
     if ipInputSwitch.value:
         command = f"{n2n} -c {groupNameInput.value} -l {ServerSelect.value}"
@@ -306,6 +317,8 @@ DownloadProgress = lang["DownloadProgress"]
 DownloadFinish = lang["DownloadFinish"]
 UpdateNotNeed = lang["UpdateNotNeed"]
 NotAdmin = lang["NotAdmin"]
+
+check_permission()
 
 with ui.tabs().classes('w-full') as tabs:
     ui.tab('home', TabHomeName, icon='home')
