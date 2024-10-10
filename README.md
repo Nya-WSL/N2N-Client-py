@@ -1,4 +1,4 @@
-# N2N Client for NiceGUI
+# N2N Client on NiceGUI
 
 ![python](https://img.shields.io/badge/Version-2.0.2-cyan) ![python](https://img.shields.io/badge/Python-3.11.5-blue) ![os](https://img.shields.io/badge/OS-Windows-orange) [![CircleCI](https://dl.circleci.com/status-badge/img/gh/Nya-WSL/N2N-Client-py/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/Nya-WSL/N2N-Client-py/tree/main)
 
