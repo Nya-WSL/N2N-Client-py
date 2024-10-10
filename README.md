@@ -6,7 +6,7 @@
 
 ### Build
 
-`python build.py --name Project_Name --icon icon.ico n2n_client.py`
+`python build.py --name Project_Name --icon icon.ico --windowed n2n_client.py`
 
 # 目前已知公开情报
 
