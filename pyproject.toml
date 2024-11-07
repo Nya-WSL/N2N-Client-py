@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "N2N-Client-NG"
+version = "2.0.2"
+description = ""
+authors = ["狐日泽 <shdocter@nya-wsl.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.11.5"
+pyyaml = "^6.0.2"
+requests = "^2.32.3"
+nicegui = "^2.5.0"
+pywebview = "^5.3.2"
+pyinstaller = "^6.11.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

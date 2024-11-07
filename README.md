@@ -6,7 +6,17 @@
 
 ### Build
 
-`python build.py --name Project_Name --icon icon.ico --windowed n2n_client.py`
+```
+# use pip
+pipintall -r requirements.txt
+python build.py --name Project_Name --icon icon.ico --windowed n2n_client.py
+
+# use poetry (min size)
+pip install poetry
+poetry install
+poetry shell
+python build.py --name Project_Name --icon icon.ico --windowed n2n_client.py
+```
 
 ## Images
 
