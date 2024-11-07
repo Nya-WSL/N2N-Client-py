@@ -1,3 +1,4 @@
 PyYAML>=6.0.2
 requests>=2.32.3
 nicegui==2.3.0
+pywebview==5.3.2
