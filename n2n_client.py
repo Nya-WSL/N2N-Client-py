@@ -10,8 +10,11 @@ import zipfile
 import requests
 from nicegui import ui, native, app
 
-version = "2.0.2"
+version = "2.0.3"
 app.storage.general.indent = True
+app.storage.general['update_server'] = "https://qn.nya-wsl.cn/"
+app.storage.general['updateCheckUrl'] = "n2n/n2n_config.html"
+app.storage.general['zipUrl'] = "n2n/n2n_update_win.zip"
 
 def check_permission():
     admin_permission = False
@@ -72,13 +75,13 @@ N2N-Client-NG.exe
         os.system("update.bat")
         app.shutdown()
 
-    response = requests.get(serverUrl.value + updateCheckUrl.value)
+    response = requests.get(app.storage.general['update_server'] + app.storage.general['updateCheckUrl'])
 
     if response.text.replace("\n", "") != version:
         with ui.dialog() as dialog, ui.card():
             percent_dialog = ui.label(UpdateLabelLang)
             with ui.row(align_items="center"):
-                updateButton = ui.button('Update', on_click=lambda: download(serverUrl.value + zipUrl.value, "cache\\n2n_update_win.zip"))
+                updateButton = ui.button('Update', on_click=lambda: download(app.storage.general['update_server'] + app.storage.general['zipUrl'], "cache\\n2n_update_win.zip"))
                 cancelButton = ui.button('Cancel', on_click=dialog.close)
         dialog.open()
     else:
@@ -252,12 +255,8 @@ lang = {
     "AutoUpdate": "Auto Update",
     "CheckServerList": "Get Server List",
     "CheckUpdateButton": "Check Update",
-    "VersionCheckUrl": "Version File Path",
-    "ZipUrl": "Update File Path",
-    "UpdateProgramUrl": "Update Program Path",
     "LocalListFile": "Local server list file type",
     "LocalListPath": "Local Server Path",
-    "UpdateProgramName": "Update Program Name",
     "NativePort": "GUI Run Port",
     "ParameterError": "Parameter error, please check!",
     "LocalServerGetError": "Get local server list is error, please check!",
@@ -299,11 +298,7 @@ AutoUpdate = lang["AutoUpdate"]
 CheckServerList = lang["CheckServerList"]
 CheckUpdateButtonLang = lang["CheckUpdateButton"]
 ListPath = lang["ListPath"]
-VersionCheckUrl = lang["VersionCheckUrl"]
-ZipUrlLang = lang["ZipUrl"]
-UpdateProgramUrl = lang["UpdateProgramUrl"]
 LocalListFile = lang["LocalListFile"]
-UpdateProgramName = lang["UpdateProgramName"]
 NativePort = lang["NativePort"]
 ParameterError = lang["ParameterError"]
 LocalServerGetError = lang["LocalServerGetError"]
@@ -326,7 +321,7 @@ with ui.tabs().classes('w-full') as tabs:
 with ui.tab_panels(tabs, value='home').classes('w-full'):
     with ui.tab_panel('settings'):
         with ui.row():
-            with ui.column():
+            with ui.column(align_items="center"):
                 AutoUpdateSwitch = ui.switch(text=AutoUpdate, value=True).bind_value(app.storage.general, "auto_update")
                 CheckServerListSwitch = ui.switch(text=CheckServerList, value=True, on_change=lambda: GetLocalServer()).bind_value(app.storage.general, "check_server_list")
                 checkUpdateButton = ui.button(text=CheckUpdateButtonLang, on_click=lambda: check_update())
@@ -334,20 +329,16 @@ with ui.tab_panels(tabs, value='home').classes('w-full'):
                 ui.badge(GlobalSettings, outline=True)
                 LanguageSelect = ui.select(label=LangSelect, options=global_lang["lang"], value="auto").style("width: 140px").bind_value(app.storage.general, "language")
                 DefaultLanguageSelect = ui.select(label=DefaultLanguageSelectLang, options=global_lang["default_lang"], value="en_us").style("width: 140px").bind_value(app.storage.general, "default_lang")
-                serverUrl = ui.input(label=ServerUrl, value="https://qn.nya-wsl.cn/").style("width: 140px").bind_value(app.storage.general, "server")
                 portSetting = ui.input(label=NativePort, value=lambda: int(check_port()), placeholder="1-65525").style("width: 140px").bind_value(app.storage.general, "native_port")
             with ui.column():
                 ui.badge(ServerSettings, outline=True)
-                ListUrl = ui.input(label=ListPath, value="n2n/ServerList.json").bind_value(app.storage.general, "listUrl")
-                updateCheckUrl = ui.input(label=VersionCheckUrl, value="n2n/n2n_config.html").bind_value(app.storage.general, "conUrl")
-                zipUrl = ui.input(label=ZipUrlLang, value="n2n/n2n_update_win.zip").bind_value(app.storage.general, "zipUrl")
-                updateUrl = ui.input(label=UpdateProgramUrl, value="n2n/update.exe").bind_value(app.storage.general, "updateUrl")
+                serverUrl = ui.input(label=ServerUrl, value="https://nya-wsl.com/").style("width: 140px").bind_value(app.storage.general, "server")
+                ListUrl = ui.input(label=ListPath, value="files/ServerList.json").bind_value(app.storage.general, "listUrl")
 
             with ui.column():
                 ui.badge(LocalSettings, outline=True)
                 # csvPath = ui.input(label=csvPathLang, value="ServerList.csv").bind_value(app.storage.general, "csvPath")
                 localListSelect = ui.select(label=LocalListFile, options=["json", "yml"]).style("width: 160px").bind_value(app.storage.general, "localListSelect")
-                updateFile = ui.input(label=UpdateProgramName, value="update.exe").style("width: 160px").bind_value(app.storage.general, "updateFile")
 
     with ui.tab_panel('home'):
         with ui.row().classes("w-full"):
