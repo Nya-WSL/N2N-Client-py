@@ -4,6 +4,7 @@ version = "2.0.2"
 description = ""
 authors = ["狐日泽 <shdocter@nya-wsl.com>"]
 readme = "README.md"
+package-mode=false
 
 [tool.poetry.dependencies]
 python = "3.11.5"
