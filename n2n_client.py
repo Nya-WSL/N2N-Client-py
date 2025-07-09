@@ -10,7 +10,7 @@ import zipfile
 import requests
 from nicegui import ui, native, app
 
-version = "2.0.3"
+version = "2.0.4"
 app.storage.general.indent = True
 app.storage.general['update_server'] = "https://qn.nya-wsl.cn/"
 app.storage.general['updateCheckUrl'] = "n2n/n2n_config.html"
